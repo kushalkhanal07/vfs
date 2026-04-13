@@ -1,0 +1,87 @@
+# =========================
+
+# Dependencies
+
+# =========================
+
+node_modules/
+
+# =========================
+
+# Build Outputs
+
+# =========================
+
+dist/
+build/
+.next/
+out/
+
+# =========================
+
+# Logs
+
+# =========================
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# =========================
+
+# Environment Variables
+
+# =========================
+
+.env
+.env.*
+!.env.example
+
+# =========================
+
+# OS Files
+
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+
+# IDE / Editor
+
+# =========================
+
+.vscode/
+.idea/
+*.iml
+
+# =========================
+
+# Cache & Temp
+
+# =========================
+
+.cache/
+.parcel-cache/
+.eslintcache
+.tmp/
+temp/
+
+# =========================
+
+# Testing / Coverage
+
+# =========================
+
+coverage/
+
+# =========================
+
+# Optional: Uploads (Node servers)
+
+# =========================
+
+uploads/
