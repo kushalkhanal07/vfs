@@ -5,12 +5,9 @@ dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
 export async function connectDB() {
   try {
-    const mongodbUrl = process.env.MONGODB_URL;
-    if (!mongodbUrl) {
-      throw new Error("MONGODB_URL is not set");
-    }
-
-    await mongoose.connect(mongodbUrl);
+    await mongoose.connect(
+      "mongodb+srv://kushal:test123@cluster0.lofq9mq.mongodb.net/vfs?appName=Cluster0"
+    );
 
     console.log("Database connected");
   } catch (err) {
