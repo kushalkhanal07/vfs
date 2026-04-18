@@ -15,6 +15,14 @@ const directorySchema = new Schema(
       default: null,
       ref: "Directory",
     },
+    deleted: {
+      type: Boolean,
+      default: false,
+    },
+    starred: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     strict: "throw",

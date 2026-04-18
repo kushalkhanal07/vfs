@@ -17,6 +17,7 @@ function DirectoryHeader({
   fileInputRef,
   handleFileSelect,
   disabled = false,
+  showTrash = false,
 }) {
   // Use a constant for the API base URL
 
@@ -136,25 +137,29 @@ function DirectoryHeader({
     <header className="directory-header">
       <h1>{directoryName}</h1>
       <div className="header-links">
-        {/* Create Folder (icon button) */}
-        <button
-          className="icon-button"
-          title="Create Folder"
-          onClick={onCreateFolderClick}
-          disabled={disabled}
-        >
-          <FaFolderPlus />
-        </button>
+        {/* Create Folder (icon button) - Hidden in trash view */}
+        {!showTrash && (
+          <button
+            className="icon-button"
+            title="Create Folder"
+            onClick={onCreateFolderClick}
+            disabled={disabled}
+          >
+            <FaFolderPlus />
+          </button>
+        )}
 
-        {/* Upload Files (icon button) */}
-        <button
-          className="icon-button"
-          title="Upload Files"
-          onClick={onUploadFilesClick}
-          disabled={disabled}
-        >
-          <FaUpload />
-        </button>
+        {/* Upload Files (icon button) - Hidden in trash view */}
+        {!showTrash && (
+          <button
+            className="icon-button"
+            title="Upload Files"
+            onClick={onUploadFilesClick}
+            disabled={disabled}
+          >
+            <FaUpload />
+          </button>
+        )}
 
         {/* Hidden file input */}
         <input

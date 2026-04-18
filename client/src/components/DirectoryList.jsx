@@ -6,6 +6,7 @@ function DirectoryList({
   activeContextMenu,
   contextMenuPos,
   handleContextMenu,
+  closeContextMenu,
   getFileIcon,
   isUploading,
   progressMap,
@@ -14,6 +15,14 @@ function DirectoryList({
   handleDeleteDirectory,
   openRenameModal,
   BASE_URL,
+  showTrash,
+  handleRestoreFile,
+  handleRestoreDirectory,
+  handlePermanentDeleteFile,
+  handlePermanentDeleteDirectory,
+  handleToggleStarFile,
+  handleToggleStarDirectory,
+  openShareModal,
 }) {
   return (
     <div className="directory-list">
@@ -28,6 +37,7 @@ function DirectoryList({
             activeContextMenu={activeContextMenu}
             contextMenuPos={contextMenuPos}
             handleContextMenu={handleContextMenu}
+            closeContextMenu={closeContextMenu}
             getFileIcon={getFileIcon}
             isUploading={isUploading}
             uploadProgress={uploadProgress}
@@ -36,6 +46,14 @@ function DirectoryList({
             handleDeleteDirectory={handleDeleteDirectory}
             openRenameModal={openRenameModal}
             BASE_URL={BASE_URL}
+            showTrash={showTrash}
+            handleRestoreFile={handleRestoreFile}
+            handleRestoreDirectory={handleRestoreDirectory}
+            handlePermanentDeleteFile={handlePermanentDeleteFile}
+            handlePermanentDeleteDirectory={handlePermanentDeleteDirectory}
+            handleToggleStarFile={handleToggleStarFile}
+            handleToggleStarDirectory={handleToggleStarDirectory}
+            openShareModal={openShareModal}
           />
         );
       })}

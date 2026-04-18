@@ -7,6 +7,9 @@ import {
   logout,
   logoutAll,
   register,
+  getStorageInfo,
+  createStorageCheckoutSession,
+  confirmStorageCheckout,
 } from "../controllers/userController.js";
 import { requireRoles } from "../middlewares/roleMiddleware.js";
 
@@ -27,5 +30,10 @@ router.get(
 
 router.post("/user/logout", logout);
 router.post("/user/logout-all", logoutAll);
+
+router.get("/user/storage", checkAuth, getStorageInfo);
+
+router.post("/user/stripe/create-checkout-session", checkAuth, createStorageCheckoutSession);
+router.post("/user/stripe/confirm-upgrade", checkAuth, confirmStorageCheckout);
 
 export default router;

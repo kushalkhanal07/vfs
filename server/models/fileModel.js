@@ -18,6 +18,39 @@ const fileSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Directory",
     },
+    deleted: {
+      type: Boolean,
+      default: false,
+    },
+    starred: {
+      type: Boolean,
+      default: false,
+    },
+    lastAccessed: {
+      type: Date,
+      default: Date.now,
+    },
+    accessCount: {
+      type: Number,
+      default: 0,
+    },
+    isShared: {
+      type: Boolean,
+      default: false,
+    },
+    sharedWith: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
+      default: [],
+    },
+    size: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     strict: "throw",

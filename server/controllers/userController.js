@@ -4,6 +4,14 @@ import mongoose, { Types } from "mongoose";
 import Session from "../models/sessionModel.js";
 import OTP from "../models/otpModel.js";
 import { normalizeRole } from "../permission.js";
+import Stripe from "stripe";
+import { appConfig } from "../config/appConfig.js";
+
+const STRIPE_STORAGE_LIMIT_BYTES = 10485760;
+
+const stripe = appConfig.stripeSecretKey
+  ? new Stripe(appConfig.stripeSecretKey, { apiVersion: "2025-03-31.basil" })
+  : null;
 
 export const register = async (req, res, next) => {
   const { name, email, password, otp } = req.body;
@@ -152,4 +160,133 @@ export const logoutAll = async (req, res) => {
   await Session.deleteMany({ userId: session.userId });
   res.clearCookie("sid");
   res.status(204).end();
+};
+
+export const getStorageInfo = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).lean();
+    const storagePercent =
+      user.storageLimit > 0
+        ? Math.round((user.storageUsed / user.storageLimit) * 100)
+        : 0;
+    
+    res.status(200).json({
+      storageUsed: user.storageUsed,
+      storageLimit: user.storageLimit,
+      storagePercent,
+      subscriptionActive: user.subscriptionActive,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const createStorageCheckoutSession = async (req, res, next) => {
+  try {
+    if (!stripe) {
+      return res.status(500).json({
+        error: "Stripe is not configured on the server",
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (user.subscriptionActive && user.storageLimit >= STRIPE_STORAGE_LIMIT_BYTES) {
+      return res.status(200).json({ message: "Storage already upgraded" });
+    }
+
+    if (!user.stripeCustomerId) {
+      const customer = await stripe.customers.create({
+        email: user.email,
+        name: user.name,
+        metadata: {
+          userId: user._id.toString(),
+        },
+      });
+
+      user.stripeCustomerId = customer.id;
+      await user.save();
+    }
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      customer: user.stripeCustomerId,
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: appConfig.stripeCurrency,
+            unit_amount: appConfig.stripeStorageUpgradeAmount,
+            product_data: {
+              name: "VFS Storage Upgrade",
+              description: "Increase storage from 5 MB to 10 MB",
+            },
+          },
+        },
+      ],
+      success_url: `${appConfig.clientOrigin}/?stripe_checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${appConfig.clientOrigin}/?stripe_checkout=cancelled`,
+      metadata: {
+        userId: user._id.toString(),
+      },
+    });
+
+    return res.status(200).json({
+      sessionId: session.id,
+      url: session.url,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const confirmStorageCheckout = async (req, res, next) => {
+  const { sessionId } = req.body;
+
+  if (!sessionId || typeof sessionId !== "string") {
+    return res.status(400).json({ error: "sessionId is required" });
+  }
+
+  try {
+    if (!stripe) {
+      return res.status(500).json({
+        error: "Stripe is not configured on the server",
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    if (!session || session.payment_status !== "paid") {
+      return res.status(400).json({ error: "Payment is not completed" });
+    }
+
+    if (user.stripeCustomerId && session.customer !== user.stripeCustomerId) {
+      return res.status(403).json({ error: "Checkout session does not belong to this user" });
+    }
+
+    if (!user.stripeCustomerId && typeof session.customer === "string") {
+      user.stripeCustomerId = session.customer;
+    }
+
+    user.storageLimit = Math.max(user.storageLimit, STRIPE_STORAGE_LIMIT_BYTES);
+    user.subscriptionActive = true;
+    await user.save();
+
+    const storagePercent =
+      user.storageLimit > 0
+        ? Math.round((user.storageUsed / user.storageLimit) * 100)
+        : 0;
+
+    return res.status(200).json({ 
+      message: "Storage upgraded successfully",
+      storageUsed: user.storageUsed,
+      storageLimit: user.storageLimit,
+      storagePercent,
+      subscriptionActive: user.subscriptionActive,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
