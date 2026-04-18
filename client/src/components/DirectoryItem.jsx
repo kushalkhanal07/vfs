@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import {
   FaFolder,
   FaFilePdf,
@@ -16,6 +17,7 @@ function DirectoryItem({
   activeContextMenu,
   contextMenuPos,
   handleContextMenu,
+  closeContextMenu,
   getFileIcon,
   isUploading,
   uploadProgress,
@@ -24,6 +26,14 @@ function DirectoryItem({
   handleDeleteDirectory,
   openRenameModal,
   BASE_URL,
+  showTrash,
+  handleRestoreFile,
+  handleRestoreDirectory,
+  handlePermanentDeleteFile,
+  handlePermanentDeleteDirectory,
+  handleToggleStarFile,
+  handleToggleStarDirectory,
+  openShareModal,
 }) {
   // Convert the file icon string to the actual Icon component
   function renderFileIcon(iconString) {
@@ -48,13 +58,17 @@ function DirectoryItem({
 
   return (
     <div
-      className="list-item hoverable-row"
+      className={`list-item hoverable-row ${
+        !item.isDirectory && item.importanceCategory === "HIGH"
+          ? "is-important"
+          : ""
+      }`}
       onClick={() =>
         !(activeContextMenu || isUploading)
           ? handleRowClick(item.isDirectory ? "directory" : "file", item.id)
           : null
       }
-      onContextMenu={(e) => handleContextMenu(e, item.id)}
+      onContextMenu={(e) => handleContextMenu(e, item)}
     >
       <div className="item-left-container">
         <div className="item-left">
@@ -63,13 +77,22 @@ function DirectoryItem({
           ) : (
             renderFileIcon(getFileIcon(item.name))
           )}
-          <span>{item.name}</span>
+          <div className="item-name-group">
+            <span className="item-name">{item.name}</span>
+            {!item.isDirectory && item.importanceCategory && (
+              <span
+                className={`importance-badge importance-${item.importanceCategory.toLowerCase()}`}
+              >
+                {item.importanceCategory}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Three dots for context menu */}
         <div
           className="context-menu-trigger"
-          onClick={(e) => handleContextMenu(e, item.id)}
+          onClick={(e) => handleContextMenu(e, item)}
         >
           <BsThreeDotsVertical />
         </div>
@@ -95,11 +118,20 @@ function DirectoryItem({
           item={item}
           contextMenuPos={contextMenuPos}
           isUploadingItem={isUploadingItem}
+          onClose={closeContextMenu}
           handleCancelUpload={handleCancelUpload}
           handleDeleteFile={handleDeleteFile}
           handleDeleteDirectory={handleDeleteDirectory}
           openRenameModal={openRenameModal}
           BASE_URL={BASE_URL}
+          showTrash={showTrash}
+          handleRestoreFile={handleRestoreFile}
+          handleRestoreDirectory={handleRestoreDirectory}
+          handlePermanentDeleteFile={handlePermanentDeleteFile}
+          handlePermanentDeleteDirectory={handlePermanentDeleteDirectory}
+          handleToggleStarFile={handleToggleStarFile}
+          handleToggleStarDirectory={handleToggleStarDirectory}
+          openShareModal={openShareModal}
         />
       )}
     </div>

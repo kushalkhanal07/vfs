@@ -9,6 +9,9 @@ function CreateDirectoryModal({
   const inputRef = useRef(null);
 
   useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     // Focus and select text only once on mount
     if (inputRef.current) {
       inputRef.current.focus();
@@ -26,6 +29,7 @@ function CreateDirectoryModal({
     // Cleanup keydown event listener on unmount
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
     };
   }, []);
 

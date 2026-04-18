@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import "./Auth.css";
@@ -62,9 +62,13 @@ const Login = () => {
   const hasError = Boolean(serverError);
 
   return (
-    <div className="container">
-      <h2 className="heading">Login</h2>
-      <form className="form" onSubmit={handleSubmit}>
+    <div className="auth-page">
+      <div className="auth-glow auth-glow-one" />
+      <div className="auth-glow auth-glow-two" />
+      <div className="auth-container">
+        <h2 className="heading">Welcome Back</h2>
+        <p className="subheading">Sign in to continue managing your files securely.</p>
+        <form className="form" onSubmit={handleSubmit}>
         {/* Email */}
         <div className="form-group">
           <label htmlFor="email" className="label">
@@ -104,34 +108,35 @@ const Login = () => {
         <button type="submit" className="submit-button">
           Login
         </button>
-      </form>
+        </form>
 
       {/* Link to the register page */}
-      <p className="link-text">
-        Don't have an account? <Link to="/register">Register</Link>
-      </p>
+        <p className="link-text">
+          Don't have an account? <Link to="/register">Register</Link>
+        </p>
 
-      <div className="or">
-        <span>Or</span>
-      </div>
+        <div className="or">
+          <span>Or continue with</span>
+        </div>
 
-      <div className="google-login">
-        <GoogleLogin
-          onSuccess={async (credentialResponse) => {
-            const data = await loginWithGoogle(credentialResponse.credential);
-            if (data.error) {
-              console.log(data);
-              return;
-            }
-            navigate("/");
-          }}
-          theme="filled_blue"
-          text="continue_with"
-          onError={() => {
-            console.log("Login Failed");
-          }}
-          useOneTap
-        />
+        <div className="google-login">
+          <GoogleLogin
+            onSuccess={async (credentialResponse) => {
+              const data = await loginWithGoogle(credentialResponse.credential);
+              if (data.error) {
+                console.log(data);
+                return;
+              }
+              navigate("/");
+            }}
+            theme="filled_blue"
+            text="continue_with"
+            onError={() => {
+              console.log("Login Failed");
+            }}
+            useOneTap
+          />
+        </div>
       </div>
     </div>
   );
