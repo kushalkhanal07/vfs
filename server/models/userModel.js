@@ -43,22 +43,6 @@ const userSchema = new Schema(
       enum: ["Active", "Suspended"],
       default: "Active",
     },
-    storageUsed: {
-      type: Number,
-      default: 0,
-    },
-    storageLimit: {
-      type: Number,
-      default: 5242880,
-    },
-    stripeCustomerId: {
-      type: String,
-      default: null,
-    },
-    subscriptionActive: {
-      type: Boolean,
-      default: false,
-    },
   },
   {
     strict: "throw",

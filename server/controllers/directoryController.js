@@ -1,39 +1,19 @@
 import { rm } from "fs/promises";
 import Directory from "../models/directoryModel.js";
 import File from "../models/fileModel.js";
-import User from "../models/userModel.js";
-
-async function getDirectoryContentsRecursive(id) {
-  let files = await File.find({ parentDirId: id })
-    .select("_id extension size deleted")
-    .lean();
-  let directories = await Directory.find({ parentDirId: id })
-    .select("_id deleted")
-    .lean();
-
-  for (const { _id } of directories) {
-    const { files: childFiles, directories: childDirectories } =
-      await getDirectoryContentsRecursive(_id);
-
-    files = [...files, ...childFiles];
-    directories = [...directories, ...childDirectories];
-  }
-
-  return { files, directories };
-}
 
 export const getDirectory = async (req, res) => {
   const user = req.user;
   const _id = req.params.id || user.rootDirId.toString();
-  const directoryData = await Directory.findOne({ _id, deleted: false }).lean();
+  const directoryData = await Directory.findOne({ _id }).lean();
   if (!directoryData) {
     return res
       .status(404)
       .json({ error: "Directory not found or you do not have access to it!" });
   }
 
-  const files = await File.find({ parentDirId: directoryData._id, deleted: false }).lean();
-  const directories = await Directory.find({ parentDirId: _id, deleted: false }).lean();
+  const files = await File.find({ parentDirId: directoryData._id }).lean();
+  const directories = await Directory.find({ parentDirId: _id }).lean();
   return res.status(200).json({
     ...directoryData,
     files: files.map((dir) => ({ ...dir, id: dir._id })),
@@ -99,115 +79,6 @@ export const deleteDirectory = async (req, res, next) => {
     const directoryData = await Directory.findOne({
       _id: id,
       userId: req.user._id,
-    });
-
-    if (!directoryData) {
-      return res.status(404).json({ error: "Directory not found!" });
-    }
-
-    if (directoryData.deleted) {
-      return res.status(200).json({ message: "Directory already in trash" });
-    }
-
-    const user = await User.findById(req.user._id);
-    const { files, directories } = await getDirectoryContentsRecursive(id);
-
-    const usedBytesToRelease = files
-      .filter((file) => !file.deleted)
-      .reduce((sum, file) => sum + (file.size || 0), 0);
-
-    const directoryIds = [directoryData._id, ...directories.map((dir) => dir._id)];
-
-    await Directory.updateMany(
-      {
-        _id: { $in: directoryIds },
-      },
-      {
-        $set: { deleted: true },
-      }
-    );
-
-    await File.updateMany(
-      {
-        _id: { $in: files.map((file) => file._id) },
-      },
-      {
-        $set: { deleted: true },
-      }
-    );
-
-    user.storageUsed = Math.max(0, user.storageUsed - usedBytesToRelease);
-    await user.save();
-
-    return res.json({ message: "Directory Deleted Successfully" });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const restoreDirectory = async (req, res, next) => {
-  const { id } = req.params;
-
-  try {
-    const directoryData = await Directory.findOne({
-      _id: id,
-      userId: req.user._id,
-    });
-
-    if (!directoryData) {
-      return res.status(404).json({ error: "Directory not found!" });
-    }
-
-    const user = await User.findById(req.user._id);
-    const { files, directories } = await getDirectoryContentsRecursive(id);
-
-    const bytesToRestore = files
-      .filter((file) => file.deleted)
-      .reduce((sum, file) => sum + (file.size || 0), 0);
-
-    if (user.storageUsed + bytesToRestore > user.storageLimit) {
-      return res.status(413).json({
-        error: "Storage limit exceeded",
-        message: "Cannot restore directory because your current storage is full.",
-      });
-    }
-
-    const directoryIds = [directoryData._id, ...directories.map((dir) => dir._id)];
-
-    await Directory.updateMany(
-      {
-        _id: { $in: directoryIds },
-      },
-      {
-        $set: { deleted: false },
-      }
-    );
-
-    await File.updateMany(
-      {
-        _id: { $in: files.map((file) => file._id) },
-      },
-      {
-        $set: { deleted: false },
-      }
-    );
-
-    user.storageUsed += bytesToRestore;
-    await user.save();
-
-    return res.json({ message: "Directory Restored Successfully" });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const permanentDeleteDirectory = async (req, res, next) => {
-  const { id } = req.params;
-
-  try {
-    const directoryData = await Directory.findOne({
-      _id: id,
-      userId: req.user._id,
     })
       .select("_id")
       .lean();
@@ -216,24 +87,29 @@ export const permanentDeleteDirectory = async (req, res, next) => {
       return res.status(404).json({ error: "Directory not found!" });
     }
 
-    const user = await User.findById(req.user._id);
-    const { files, directories } = await getDirectoryContentsRecursive(id);
+    async function getDirectoryContents(id) {
+      let files = await File.find({ parentDirId: id })
+        .select("extension")
+        .lean();
+      let directories = await Directory.find({ parentDirId: id })
+        .select("_id")
+        .lean();
 
-    const activeBytesToRelease = files
-      .filter((file) => !file.deleted)
-      .reduce((sum, file) => sum + (file.size || 0), 0);
+      for (const { _id } of directories) {
+        const { files: childFiles, directories: childDirectories } =
+          await getDirectoryContents(_id);
 
-    user.storageUsed = Math.max(0, user.storageUsed - activeBytesToRelease);
-    await user.save();
+        files = [...files, ...childFiles];
+        directories = [...directories, ...childDirectories];
+      }
+
+      return { files, directories };
+    }
+
+    const { files, directories } = await getDirectoryContents(id);
 
     for (const { _id, extension } of files) {
-      try {
-        await rm(`./storage/${_id.toString()}${extension}`);
-      } catch (err) {
-        if (err.code !== "ENOENT") {
-          throw err;
-        }
-      }
+      await rm(`./storage/${_id.toString()}${extension}`);
     }
 
     await File.deleteMany({
@@ -243,53 +119,8 @@ export const permanentDeleteDirectory = async (req, res, next) => {
     await Directory.deleteMany({
       _id: { $in: [...directories.map(({ _id }) => _id), id] },
     });
-
-    return res.json({ message: "Directory permanently deleted" });
   } catch (err) {
     next(err);
   }
-};
-
-export const getTrash = async (req, res, next) => {
-  try {
-    const userId = req.user._id;
-    
-    const deletedFiles = await File.find({
-      userId,
-      deleted: true,
-    }).lean();
-    
-    const deletedDirectories = await Directory.find({
-      userId,
-      deleted: true,
-    }).lean();
-
-    return res.status(200).json({
-      files: deletedFiles.map((file) => ({ ...file, id: file._id })),
-      directories: deletedDirectories.map((dir) => ({ ...dir, id: dir._id })),
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const toggleStarDirectory = async (req, res, next) => {
-  const { id } = req.params;
-  
-  try {
-    const directory = await Directory.findOne({
-      _id: id,
-      userId: req.user._id,
-    });
-
-    if (!directory) {
-      return res.status(404).json({ error: "Directory not found!" });
-    }
-
-    directory.starred = !directory.starred;
-    await directory.save();
-    return res.status(200).json({ message: "Star status updated", starred: directory.starred });
-  } catch (err) {
-    next(err);
-  }
+  return res.json({ message: "Files deleted successfully" });
 };

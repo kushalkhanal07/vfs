@@ -4,26 +4,11 @@ import Register from "./Register";
 import "./App.css";
 import Login from "./Login";
 import UsersPage from "./UsersPage";
-import Home from "./Home";
-import About from "./About";
-import Contact from "./Contact";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <DirectoryView />,
-  },
-  {
-    path: "/home",
-    element: <Home />,
-  },
-  {
-    path: "/about",
-    element: <About />,
-  },
-  {
-    path: "/contact",
-    element: <Contact />,
   },
   {
     path: "/register",
