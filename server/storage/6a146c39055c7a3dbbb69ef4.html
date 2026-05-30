@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web-Based Multimedia Integration</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 40px; 
+            background-color: #fafafa;
+            color: #333;
+        }
+        .student-info { 
+            background-color: #f4f4f4; 
+            padding: 15px; 
+            border-left: 5px solid #007BFF; 
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        table, th, td { 
+            border: 1px solid #ccc; 
+            border-collapse: collapse; 
+            padding: 12px; 
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        .dropzone { 
+            width: 320px; 
+            height: 120px; 
+            border: 2px dashed #007BFF; 
+            margin-top: 15px; 
+            padding: 10px; 
+            text-align: center; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            color: #666;
+        }
+        .media-container {
+            margin-bottom: 25px;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #ddd;
+            margin: 30px 0;
+        }
+        input[type="submit"] {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="student-info">
+        <strong>Name:</strong> [Student Name] <br>
+        <strong>Symbol No:</strong> [Symbol No]
+    </div>
+
+    <h2>1. Text, Images, and Tables</h2>
+    <p>Embedding standard digital media via HTML.</p>
+    <!-- Linked to your local lab image -->
+    <img src="test.jpg" alt="Local Lab Image" width="300" style="border: 1px solid #ddd; border-radius: 4px;"><br><br>
+    
+    <table>
+        <tr>
+            <th>Compression Type</th>
+            <th>Algorithm</th>
+        </tr>
+        <tr>
+            <td>Lossless</td>
+            <td>Huffman / RLE</td>
+        </tr>
+        <tr>
+            <td>Lossy</td>
+            <td>JPEG (DCT-based)</td>
+        </tr>
+    </table>
+
+    <hr>
+
+    <h2>2. Embedded Audio and Video</h2>
+    <div class="media-container">
+        <p><strong>Audio Stream playback (test.wav):</strong></p>
+        <!-- Linked to your local lab audio file -->
+        <audio controls>
+            <source src="test.wav" type="audio/wav">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+    
+    <div class="media-container">
+        <p><strong>Video Stream playback (test.mp4):</strong></p>
+        <!-- Linked to your local lab video file -->
+        <video width="450" controls style="border: 1px solid #ddd; background: #000;">
+            <source src="test.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <hr>
+
+    <h2>3. Drag-and-Drop Implementation</h2>
+    <p>Drag the logo thumbnail into the designated target landing bay zone:</p>
+    <!-- Using the same local image as a draggable object element token -->
+    <img id="dragImage" src="test.jpg" draggable="true" ondragstart="drag(event)" alt="Draggable Item" width="60" style="cursor: move; border: 1px solid #333;">
+    
+    <div id="div1" class="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)">
+        Drop the image here
+    </div>
+
+    <hr>
+
+    <h2>4. Form Simulation (Email Action)</h2>
+    <form action="mailto:admin@lab.com" method="post" enctype="text/plain">
+        <label for="media_type">Select Media Type:</label>
+        <select id="media_type" name="media_type">
+            <option value="audio">Audio</option>
+            <option value="video">Video</option>
+            <option value="image">Image</option>
+        </select><br><br>
+        
+        <label>Format Preference:</label>
+        <input type="radio" id="lossy" name="format" value="Lossy">
+        <label for="lossy">Lossy</label>
+        <input type="radio" id="lossless" name="format" value="Lossless">
+        <label for="lossless">Lossless</label><br><br>
+        
+        <input type="submit" value="Send Email Submission">
+    </form>
+
+    <script>
+        // HTML5 Drag and Drop Native JS API Architecture
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            ev.target.innerHTML = ""; // Clear text helper prompt string on success drop
+            ev.target.appendChild(document.getElementById(data));
+        }
+    </script>
+</body>
+</html>

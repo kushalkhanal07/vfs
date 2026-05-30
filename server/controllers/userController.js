@@ -290,3 +290,117 @@ export const confirmStorageCheckout = async (req, res, next) => {
     next(err);
   }
 };
+
+/**
+ * USER PROFILE ENDPOINTS
+ */
+
+export const getUserProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .select("name email picture role status storageUsed storageLimit")
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateUserProfile = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const { name, email } = req.body;
+
+    if (!name || typeof name !== "string" || name.trim().length < 1) {
+      return res.status(400).json({ error: "Name is required" });
+    }
+
+    const update = {};
+    if (typeof name === "string") update.name = name.trim();
+    if (typeof email === "string") update.email = email.trim();
+
+    const user = await User.findByIdAndUpdate(userId, { $set: update }, { new: true }).select("name email picture role status").lean();
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ user });
+  } catch (err) {
+    // handle duplicate email error
+    if (err && err.code === 11000 && err.keyValue && err.keyValue.email) {
+      return res.status(409).json({ error: "Email already in use" });
+    }
+    next(err);
+  }
+};
+
+export const getDashboardProfile = async (req, res, next) => {
+  try {
+    const Note = (await import("../models/noteModel.js")).default;
+    const RevisionSchedule = (await import("../models/revisionScheduleModel.js")).default;
+    const RevisionHistory = (await import("../models/revisionHistoryModel.js")).default;
+    const File = (await import("../models/fileModel.js")).default;
+
+    const userId = req.user._id;
+
+    const [user, totalNotes, totalFiles, upcomingRevisions, revisionHistory] = await Promise.all([
+      User.findById(userId)
+        .select("name email picture role subscriptionActive")
+        .lean(),
+      Note.countDocuments({ userId, deleted: false, isArchived: false }),
+      File.countDocuments({ userId, deleted: false }),
+      RevisionSchedule.countDocuments({ userId, isActive: true }),
+      RevisionHistory.find({ userId }).sort({ reviewDate: -1 }).limit(10).lean(),
+    ]);
+
+    // Calculate study streak
+    let currentStreak = 0;
+    if (revisionHistory.length > 0) {
+      let tempStreak = 1;
+      let lastDate = null;
+
+      for (const review of revisionHistory) {
+        const reviewDate = new Date(review.reviewDate);
+        reviewDate.setHours(0, 0, 0, 0);
+
+        if (!lastDate) {
+          lastDate = reviewDate;
+        } else {
+          const diffTime = Math.abs(lastDate - reviewDate);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          if (diffDays === 1) {
+            tempStreak++;
+          } else if (diffDays > 1) {
+            break;
+          }
+
+          lastDate = reviewDate;
+        }
+      }
+
+      currentStreak = tempStreak;
+    }
+
+    res.json({
+      user: {
+        ...user,
+        loginProvider: user.password ? "email" : "google",
+      },
+      stats: {
+        totalNotes,
+        totalFiles,
+        upcomingRevisions,
+        revisionStreak: currentStreak,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};

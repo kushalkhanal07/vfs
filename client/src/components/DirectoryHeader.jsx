@@ -191,7 +191,7 @@ function DirectoryHeader({
                   </div>
                   <div className="user-menu-divider" />
                   <div
-                    className="user-menu-item login-btn"
+                    className="user-menu-item login-btn !text-white"
                     onClick={handleLogout}
                   >
                     <FaSignOutAlt className="menu-item-icon" />

@@ -10,6 +10,9 @@ import {
   getStorageInfo,
   createStorageCheckoutSession,
   confirmStorageCheckout,
+  getUserProfile,
+  updateUserProfile,
+  getDashboardProfile,
 } from "../controllers/userController.js";
 import { requireRoles } from "../middlewares/roleMiddleware.js";
 
@@ -20,6 +23,13 @@ router.post("/user/register", register);
 router.post("/user/login", login);
 
 router.get("/user", checkAuth, getCurrentUser);
+
+// New profile endpoints
+router.get("/user/me", checkAuth, getUserProfile);
+router.get("/user/dashboard-profile", checkAuth, getDashboardProfile);
+
+// Update profile
+router.patch("/user/profile", checkAuth, updateUserProfile);
 
 router.get(
   "/users",

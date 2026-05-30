@@ -51,8 +51,20 @@ const fileSchema = new Schema(
       type: Number,
       default: 0,
     },
+    fileHash: {
+      type: String,
+      index: true,
+      sparse: true,
+    },
+    originalName: {
+      type: String,
+    },
+    mimeType: {
+      type: String,
+    },
   },
   {
+    timestamps: true,
     strict: "throw",
   }
 );

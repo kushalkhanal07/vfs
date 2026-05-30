@@ -1,0 +1,12 @@
+{
+  "name": "vfs-root",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix frontend_sanchit run dev",
+    "build": "npm --prefix frontend_sanchit run build",
+    "preview": "npm --prefix frontend_sanchit run preview"
+  },
+  "dependencies": {
+    "@react-oauth/google": "^0.12.1"
+  }
+}

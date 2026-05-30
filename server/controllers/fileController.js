@@ -215,6 +215,14 @@ export const uploadFile = async (req, res, next) => {
       user.storageUsed += fileSize;
       await user.save();
 
+      // Log analytics activity
+      try {
+        const AnalyticsService = (await import("../services/analyticsService.js")).default;
+        await AnalyticsService.logActivity({ userId: req.user._id, activityType: "file_upload", activityCount: 1, duration: 0, subject: null });
+      } catch (e) {
+        console.error("Failed to log analytics for file upload", e);
+      }
+
       return res.status(201).json({ message: "File Uploaded", fileSize });
     } catch (err) {
       await File.deleteOne({ _id: insertedFile.insertedId });

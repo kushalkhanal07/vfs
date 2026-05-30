@@ -82,9 +82,10 @@ export default function UsersPage() {
               <td>{user.isLoggedIn ? "Logged In" : "Logged Out"}</td>
               <td>
                 <button
-                  className="logout-button"
+                  className=" !text-[white]"
                   onClick={() => logoutUser(user.id)}
                   disabled={!user.isLoggedIn}
+                
                 >
                   Logout
                 </button>
