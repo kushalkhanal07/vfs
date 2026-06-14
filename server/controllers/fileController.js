@@ -4,6 +4,7 @@ import path from "path";
 import Directory from "../models/directoryModel.js";
 import File from "../models/fileModel.js";
 import User from "../models/userModel.js";
+import SpamModeration from "../models/spamModerationModel.js";
 
 const SPAM_THRESHOLD = 0.15;
 const RISKY_EXTENSIONS = [".exe", ".bat", ".cmd", ".vbs", ".js", ".scr", ".pif"];
@@ -182,6 +183,26 @@ export const uploadFile = async (req, res, next) => {
         matchedFilenameWords: spamResult.matchedFilenameWords,
         matchedPhrases: spamResult.matchedPhrases,
       });
+
+      try {
+        await SpamModeration.create({
+          itemType: "file",
+          itemId: filename,
+          userId: req.user._id,
+          fileName: filename,
+          spamScore: spamResult.spamScore,
+          reasons: spamResult.reasons,
+          status: "blocked",
+          metadata: {
+            matchedFilenameWords: spamResult.matchedFilenameWords,
+            matchedPhrases: spamResult.matchedPhrases,
+            extension,
+            fileSize,
+          },
+        });
+      } catch (logError) {
+        console.error("Failed to persist spam moderation record", logError);
+      }
 
       return res.status(422).json({
         error: "Potential spam content detected",

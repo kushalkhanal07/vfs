@@ -5,11 +5,11 @@ import OTP from "../models/otpModel.js";
 // For Gmail: Use app password (https://myaccount.google.com/apppasswords)
 // For other services: Update with your SMTP credentials
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
+  host: process.env.EMAIL_HOST || "smtp.gmail.com",
+  port: Number(process.env.EMAIL_PORT || 465),
   auth: {
-    user: "kushalkaushal24@gmail.com",
-    pass: "sjas cloh aaym wbmj",
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
@@ -34,7 +34,7 @@ export async function sendOtpService(email) {
 
   try {
     await transporter.sendMail({
-      from: process.env.EMAIL_USER || "noreply@storageapp.com",
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER || "noreply@storageapp.com",
       to: email,
       subject: "Storage App - Your OTP Code",
       html,
