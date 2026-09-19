@@ -1,19 +1,20 @@
 import Session from "../models/sessionModel.js";
 import User from "../models/userModel.js";
 import { normalizeRole } from "../permission.js";
+import { sessionCookieOptions } from "../utils/cookieOptions.js";
 
 export default async function checkAuth(req, res, next) {
   const { sid } = req.signedCookies;
 
   if (!sid) {
-    res.clearCookie("sid");
+    res.clearCookie("sid", sessionCookieOptions);
     return res.status(401).json({ error: "1 Not logged in!" });
   }
 
   const session = await Session.findById(sid);
 
   if (!session) {
-    res.clearCookie("sid");
+    res.clearCookie("sid", sessionCookieOptions);
     return res.status(401).json({ error: "2 Not logged in!" });
   }
 
@@ -23,7 +24,7 @@ export default async function checkAuth(req, res, next) {
   }
 
   if (user.status === "Suspended") {
-    res.clearCookie("sid");
+    res.clearCookie("sid", sessionCookieOptions);
     return res.status(403).json({ error: "Your account is suspended." });
   }
 

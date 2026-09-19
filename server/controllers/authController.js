@@ -5,6 +5,7 @@ import Directory from "../models/directoryModel.js";
 import Session from "../models/sessionModel.js";
 import { verifyIdToken } from "../services/googleAuthService.js";
 import { sendOtpService } from "../services/sendOtpService.js";
+import { sessionCookieOptions, SESSION_MAX_AGE } from "../utils/cookieOptions.js";
 
 export const sendOtp = async (req, res, next) => {
   const { email } = req.body;
@@ -47,10 +48,8 @@ export const loginWithGoogle = async (req, res, next) => {
     const session = await Session.create({ userId: user._id });
 
     res.cookie("sid", session.id, {
-      httpOnly: true,
-      signed: true,
-      sameSite: "none",
-      maxAge: 60 * 1000 * 60 * 24 * 7,
+      ...sessionCookieOptions,
+      maxAge: SESSION_MAX_AGE,
     });
 
     return res.json({ message: "logged in" });
@@ -91,10 +90,8 @@ export const loginWithGoogle = async (req, res, next) => {
     const session = await Session.create({ userId: userId });
 
     res.cookie("sid", session.id, {
-      httpOnly: true,
-      signed: true,
-      sameSite: "none",
-      maxAge: 60 * 1000 * 60 * 24 * 7,
+      ...sessionCookieOptions,
+      maxAge: SESSION_MAX_AGE,
     });
 
     mongooseSession.commitTransaction();

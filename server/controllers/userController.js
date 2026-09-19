@@ -6,6 +6,7 @@ import OTP from "../models/otpModel.js";
 import { normalizeRole } from "../permission.js";
 import Stripe from "stripe";
 import { appConfig } from "../config/appConfig.js";
+import { sessionCookieOptions, SESSION_MAX_AGE } from "../utils/cookieOptions.js";
 
 // Every successful Stripe payment adds this much storage
 const STORAGE_UPGRADE_BYTES = 5 * 1024 * 1024;
@@ -113,10 +114,8 @@ export const login = async (req, res, next) => {
   const session = await Session.create({ userId: user._id });
 
   res.cookie("sid", session.id, {
-    httpOnly: true,
-    signed: true,
-    sameSite: "none",
-    maxAge: 60 * 1000 * 60 * 24 * 7,
+    ...sessionCookieOptions,
+    maxAge: SESSION_MAX_AGE,
   });
   res.json({ message: "logged in" });
 };
@@ -152,7 +151,7 @@ export const getCurrentUser = (req, res) => {
 export const logout = async (req, res) => {
   const { sid } = req.signedCookies;
   await Session.findByIdAndDelete(sid);
-  res.clearCookie("sid");
+  res.clearCookie("sid", sessionCookieOptions);
   res.status(204).end();
 };
 
@@ -160,7 +159,7 @@ export const logoutAll = async (req, res) => {
   const { sid } = req.signedCookies;
   const session = await Session.findById(sid);
   await Session.deleteMany({ userId: session.userId });
-  res.clearCookie("sid");
+  res.clearCookie("sid", sessionCookieOptions);
   res.status(204).end();
 };
 
