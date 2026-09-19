@@ -6,13 +6,13 @@ import { SectionHeading, FeatureCard, CTASection } from "@/components/marketing"
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Sanchit" },
+      { title: "About — StudyVault" },
       {
         name: "description",
         content:
-          "Sanchit's mission: help every student think clearly, retain deeply, and revise smartly with an intelligent learning vault.",
+          "StudyVault's mission: help every student think clearly, retain deeply, and revise smartly with an intelligent learning vault.",
       },
-      { property: "og:title", content: "About Sanchit" },
+      { property: "og:title", content: "About StudyVault" },
       { property: "og:description", content: "The vision and team behind a vault for learning." },
     ],
   }),
@@ -44,7 +44,7 @@ const timeline = [
 
 const team = [
   {
-    name: "Sanchit Team",
+    name: "StudyVault Team",
     role: "Founders & engineers",
     bio: "Ex-students, lifelong learners, building the tool we always wanted.",
   },
@@ -56,7 +56,7 @@ const team = [
   {
     name: "Student Council",
     role: "Beta community",
-    bio: "12k+ students testing, breaking, and improving Sanchit every week.",
+    bio: "12k+ students testing, breaking, and improving StudyVault every week.",
   },
 ];
 
@@ -73,7 +73,7 @@ function AboutPage() {
             way they actually learn.
           </h1>
           <p className="mt-5 text-lg text-muted-foreground">
-            Sanchit was born inside a library at 2 AM — surrounded by a hundred tabs, scattered
+            StudyVault was born inside a library at 2 AM — surrounded by a hundred tabs, scattered
             PDFs, and a calendar full of exams. We built the vault we wished existed.
           </p>
         </div>
@@ -123,7 +123,7 @@ function AboutPage() {
             {
               icon: Rocket,
               title: "Compounds over time",
-              description: "The longer you use Sanchit, the smarter your study schedule becomes.",
+              description: "The longer you use StudyVault, the smarter your study schedule becomes.",
             },
           ].map((c) => (
             <FeatureCard key={c.title} {...c} />

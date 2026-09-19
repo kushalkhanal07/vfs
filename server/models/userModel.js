@@ -59,6 +59,11 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    // Stripe checkout sessions already turned into extra storage (stops double upgrades)
+    stripeCheckoutSessionIds: {
+      type: [String],
+      default: [],
+    },
   },
   {
     strict: "throw",

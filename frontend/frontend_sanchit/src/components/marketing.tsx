@@ -72,7 +72,7 @@ export function CTASection() {
               Build the vault your future self will thank you for.
             </h3>
             <p className="mt-3 max-w-xl text-base text-blue-950">
-              Join thousands of students using Sanchit to study smarter — not harder.
+              Join thousands of students using StudyVault to study smarter — not harder.
             </p>
           </div>
           <div className="flex flex-wrap gap-3 md:justify-end">

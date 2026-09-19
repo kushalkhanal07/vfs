@@ -80,7 +80,7 @@ export function AdminRevisionAnalyticsPage() {
               <XAxis dataKey="label" tick={{ fill: "#cbd5e1", fontSize: 11 }} />
               <YAxis tick={{ fill: "#cbd5e1", fontSize: 11 }} />
               <Tooltip contentStyle={{ background: "#020617", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }} />
-              <Bar dataKey="value" fill="#3b82f6" radius={[10, 10, 0, 0]} />
+              <Bar dataKey="value" fill="#35ab8b" radius={[10, 10, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

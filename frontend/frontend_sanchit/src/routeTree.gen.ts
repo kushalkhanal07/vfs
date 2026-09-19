@@ -14,6 +14,7 @@ import { Route as TestimonialsRouteImport } from './routes/testimonials'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SessionRouteImport } from './routes/session'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as NetworkRouteImport } from './routes/network'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -69,6 +70,11 @@ const SessionRoute = SessionRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NetworkRoute = NetworkRouteImport.update({
+  id: '/network',
+  path: '/network',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -236,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
   '/login': typeof LoginRoute
+  '/network': typeof NetworkRoute
   '/services': typeof ServicesRoute
   '/session': typeof SessionRouteWithChildren
   '/signup': typeof SignupRoute
@@ -272,6 +279,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
   '/login': typeof LoginRoute
+  '/network': typeof NetworkRoute
   '/services': typeof ServicesRoute
   '/session': typeof SessionRouteWithChildren
   '/signup': typeof SignupRoute
@@ -311,6 +319,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
   '/login': typeof LoginRoute
+  '/network': typeof NetworkRoute
   '/services': typeof ServicesRoute
   '/session': typeof SessionRouteWithChildren
   '/signup': typeof SignupRoute
@@ -351,6 +360,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/features'
     | '/login'
+    | '/network'
     | '/services'
     | '/session'
     | '/signup'
@@ -387,6 +397,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/features'
     | '/login'
+    | '/network'
     | '/services'
     | '/session'
     | '/signup'
@@ -425,6 +436,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/features'
     | '/login'
+    | '/network'
     | '/services'
     | '/session'
     | '/signup'
@@ -464,6 +476,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   FeaturesRoute: typeof FeaturesRoute
   LoginRoute: typeof LoginRoute
+  NetworkRoute: typeof NetworkRoute
   ServicesRoute: typeof ServicesRoute
   SessionRoute: typeof SessionRouteWithChildren
   SignupRoute: typeof SignupRoute
@@ -506,6 +519,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/network': {
+      id: '/network'
+      path: '/network'
+      fullPath: '/network'
+      preLoaderRoute: typeof NetworkRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -810,6 +830,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   FeaturesRoute: FeaturesRoute,
   LoginRoute: LoginRoute,
+  NetworkRoute: NetworkRoute,
   ServicesRoute: ServicesRoute,
   SessionRoute: SessionRouteWithChildren,
   SignupRoute: SignupRoute,

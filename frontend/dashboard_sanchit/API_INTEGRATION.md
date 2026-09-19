@@ -1,4 +1,4 @@
-# Dashboard Sanchit - API Integration Guide
+# Dashboard StudyVault - API Integration Guide
 
 ## 📚 Available API Modules
 

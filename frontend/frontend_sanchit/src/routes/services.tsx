@@ -14,14 +14,14 @@ import { SectionHeading, CTASection } from "@/components/marketing";
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Modules — Sanchit" },
+      { title: "Modules — StudyVault" },
       {
         name: "description",
         content:
-          "Discover Sanchit modules: notes, file organization, revision planner, analytics, recommendations, and secure cloud storage.",
+          "Discover StudyVault modules: notes, file organization, revision planner, analytics, recommendations, and secure cloud storage.",
       },
-      { property: "og:title", content: "Modules — Sanchit" },
-      { property: "og:description", content: "Every module of the Sanchit platform." },
+      { property: "og:title", content: "Modules — StudyVault" },
+      { property: "og:description", content: "Every module of the StudyVault platform." },
     ],
   }),
   component: ServicesPage,

@@ -51,7 +51,7 @@ export function AppSidebar() {
           <GraduationCap className="size-5 text-primary-foreground" />
         </div>
         <div>
-          <h1 className="font-semibold tracking-tight text-base leading-none">Sanchit</h1>
+          <h1 className="font-semibold tracking-tight text-base leading-none">StudyVault</h1>
           <p className="text-[11px] text-muted-foreground mt-1">Vault for Learning</p>
         </div>
       </div>

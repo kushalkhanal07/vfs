@@ -13,7 +13,7 @@ const titleMap: Record<string, string> = {
 
 export function TopBar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const title = titleMap[pathname] ?? "Sanchit";
+  const title = titleMap[pathname] ?? "StudyVault";
 
   return (
     <header className="sticky top-0 z-30 glass-strong border-b border-border">

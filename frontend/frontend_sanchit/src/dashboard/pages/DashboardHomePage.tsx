@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import LearningAnalytics from "@/dashboard/components/LearningAnalytics";
 import { StorageWidget } from "@/dashboard/components/StorageWidget";
+import { RevisionPriorityCard } from "@/components/RevisionPriorityCard";
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import * as dashboardApi from "@/api/dashboard";
@@ -208,6 +209,8 @@ export function DashboardHomePage() {
         <div className="rounded-2xl border border-gray-200 bg-white shadow-none">
           <StorageWidget />
         </div>
+
+        <RevisionPriorityCard limit={4} />
       </div>
       
       <div className="mt-4">

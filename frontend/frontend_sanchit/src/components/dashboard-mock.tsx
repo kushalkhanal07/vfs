@@ -35,7 +35,7 @@ export function DashboardMock() {
               <span className="grid h-7 w-7 place-items-center rounded-md bg-black text-white">
                 <Sparkles className="h-3.5 w-3.5" />
               </span>
-              <span className="font-semibold">Sanchit</span>
+              <span className="font-semibold">StudyVault</span>
             </div>
             <div className="space-y-1">
               {[

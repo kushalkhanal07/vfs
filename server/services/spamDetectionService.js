@@ -1,99 +1,255 @@
 import crypto from "crypto";
 
-/**
- * Compute spam score for note content
- * Score 0-100, threshold >60 = spam
+/*
+ * SPAM DETECTION ALGORITHM
+ *
+ * A note gets points for every rule it breaks:
+ *   Rule 1  Exact copy of another note                +40
+ *   Rule 2  Almost the same words as another note     +30  (only checked if Rule 1 did not match)
+ *   Rule 3  More than 10 notes in the last 5 minutes  +15
+ *   Rule 4  Looks like gibberish                      +10
+ *   Rule 5  Fewer than 5 words                         +5
+ *   Rule 6  Too many empty / very short lines          +5
+ *
+ *   score >= 60        -> spam
+ *   40 <= score < 60   -> warning
  */
+
+// ---------------- Helper functions ----------------
+
+const UPPERCASE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const LOWERCASE_LETTERS = "abcdefghijklmnopqrstuvwxyz";
+
+// Put one item at the end of a list.
+function addToList(list, item) {
+  list[list.length] = item;
+}
+
+// A word character is a letter (a-z, A-Z), a digit (0-9) or "_".
+function isWordCharacter(ch) {
+  return (
+    (ch >= "a" && ch <= "z") ||
+    (ch >= "A" && ch <= "Z") ||
+    (ch >= "0" && ch <= "9") ||
+    ch === "_"
+  );
+}
+
+// Change "A".."Z" into "a".."z". Every other character stays the same.
+function toSmallLetters(word) {
+  let result = "";
+
+  for (let i = 0; i < word.length; i++) {
+    let ch = word[i];
+
+    if (ch >= "A" && ch <= "Z") {
+      for (let j = 0; j < UPPERCASE_LETTERS.length; j++) {
+        if (ch === UPPERCASE_LETTERS[j]) {
+          ch = LOWERCASE_LETTERS[j];
+          break;
+        }
+      }
+    }
+
+    result = result + ch;
+  }
+
+  return result;
+}
+
+// Break text into words.
+// Example: "Hi, my_note 42!" -> ["Hi", "my_note", "42"]
+function getWords(text) {
+  const words = [];
+  let currentWord = "";
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+
+    if (isWordCharacter(ch)) {
+      currentWord = currentWord + ch;
+    } else if (currentWord !== "") {
+      addToList(words, currentWord);
+      currentWord = "";
+    }
+  }
+
+  if (currentWord !== "") {
+    addToList(words, currentWord);
+  }
+
+  return words;
+}
+
+// Unique small-letter words that are 4 to 20 characters long.
+// "list" holds the words, "lookup" tells us quickly if a word is present.
+function getUniqueWords(text) {
+  const allWords = getWords(text);
+  const list = [];
+  const lookup = {};
+
+  for (let i = 0; i < allWords.length; i++) {
+    const word = toSmallLetters(allWords[i]);
+
+    if (word.length < 4 || word.length > 20) {
+      continue;
+    }
+
+    // "#" in front stops words like "constructor" clashing with built-in object keys
+    const key = "#" + word;
+
+    if (lookup[key] !== true) {
+      lookup[key] = true;
+      addToList(list, word);
+    }
+  }
+
+  return { list, lookup };
+}
+
+// Jaccard similarity = common words / all different words
+//   all different words = wordsA + wordsB - common
+//   0 means nothing is shared, 1 means exactly the same words
+function jaccardSimilarity(wordsA, wordsB) {
+  let common = 0;
+
+  for (let i = 0; i < wordsA.list.length; i++) {
+    if (wordsB.lookup["#" + wordsA.list[i]] === true) {
+      common = common + 1;
+    }
+  }
+
+  const allDifferent = wordsA.list.length + wordsB.list.length - common;
+
+  return common / allDifferent;
+}
+
+// Round to the nearest whole number (0.5 goes up). For numbers >= 0.
+function roundToWholeNumber(value) {
+  const decimalPart = value % 1;
+  const wholePart = value - decimalPart;
+
+  return decimalPart >= 0.5 ? wholePart + 1 : wholePart;
+}
+
+// ---------------- Main algorithm ----------------
+
 export function computeNoteSpamScore(content, existingNotes = []) {
   let score = 0;
   const penalties = [];
 
-  // 1. EXACT DUPLICATE CHECK (40 pts)
-  const contentHash = crypto
-    .createHash("sha256")
-    .update(content.trim().toLowerCase())
-    .digest("hex");
+  const contentHash = computeContentHash(content);
 
-  const exactMatch = existingNotes.find(
-    (n) => n.contentHash === contentHash && !n.deleted
-  );
-  if (exactMatch) {
-    score += 40;
-    penalties.push("exact_duplicate");
+  // RULE 1: exact copy of another note (+40)
+  let isExactCopy = false;
+
+  for (let i = 0; i < existingNotes.length; i++) {
+    const note = existingNotes[i];
+
+    if (note.contentHash === contentHash && !note.deleted) {
+      isExactCopy = true;
+      break;
+    }
   }
 
-  // 2. HIGH SIMILARITY CHECK (30 pts)
-  // Jaccard similarity on word sets (words >= 4 chars)
-  if (!exactMatch) {
-    const words = new Set(
-      (content.toLowerCase().match(/\b\w{4,}\b/g) || []).filter(
-        (w) => w.length <= 20
-      )
-    );
-    
-    for (const note of existingNotes) {
-      if (note.deleted) continue;
-      const noteWords = new Set(
-        (note.content.toLowerCase().match(/\b\w{4,}\b/g) || []).filter(
-          (w) => w.length <= 20
-        )
-      );
+  if (isExactCopy) {
+    score = score + 40;
+    addToList(penalties, "exact_duplicate");
+  }
 
-      if (words.size > 0 && noteWords.size > 0) {
-        const intersection = new Set([...words].filter((w) => noteWords.has(w)));
-        const union = new Set([...words, ...noteWords]);
-        const similarity = intersection.size / union.size;
+  // RULE 2: more than 85% of the words are the same as another note (+30)
+  if (!isExactCopy) {
+    const newWords = getUniqueWords(content);
+
+    for (let i = 0; i < existingNotes.length; i++) {
+      const note = existingNotes[i];
+
+      if (note.deleted) {
+        continue;
+      }
+
+      const oldWords = getUniqueWords(note.content);
+
+      if (newWords.list.length > 0 && oldWords.list.length > 0) {
+        const similarity = jaccardSimilarity(newWords, oldWords);
 
         if (similarity > 0.85) {
-          score += 30;
-          penalties.push("high_similarity");
+          score = score + 30;
+          addToList(penalties, "high_similarity");
           break;
         }
       }
     }
   }
 
-  // 3. RAPID CREATION PATTERN (15 pts)
-  // More than 10 notes in last 5 minutes = suspicious
-  const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
-  const recentCount = existingNotes.filter(
-    (n) => !n.deleted && new Date(n.createdAt) > fiveMinAgo
-  ).length;
-  if (recentCount > 10) {
-    score += 15;
-    penalties.push("rapid_creation");
-  }
+  // RULE 3: more than 10 notes in the last 5 minutes (+15)
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+  let recentNotes = 0;
 
-  // 4. GIBBERISH DETECTION (10 pts)
-  // Low ratio of real dictionary-like words (avg word length sanity check)
-  const allWords = content.match(/\b\w+\b/g) || [];
-  if (allWords.length > 0) {
-    const avgLen = allWords.reduce((s, w) => s + w.length, 0) / allWords.length;
-    const longWordRatio = allWords.filter((w) => w.length > 15).length / allWords.length;
+  for (let i = 0; i < existingNotes.length; i++) {
+    const note = existingNotes[i];
 
-    if (avgLen < 2 || longWordRatio > 0.3) {
-      score += 10;
-      penalties.push("gibberish_content");
+    if (!note.deleted && new Date(note.createdAt) > fiveMinutesAgo) {
+      recentNotes = recentNotes + 1;
     }
   }
 
-  // 5. EMPTY / MINIMAL CONTENT (5 pts)
-  const wordCount = allWords.length;
-  if (wordCount < 5) {
-    score += 5;
-    penalties.push("minimal_content");
+  if (recentNotes > 10) {
+    score = score + 15;
+    addToList(penalties, "rapid_creation");
   }
 
-  // 6. EXCESSIVE WHITESPACE / FORMATTING (5 pts)
-  const lineCount = content.split("\n").length;
-  const avgCharsPerLine = content.length / lineCount;
-  if (avgCharsPerLine < 3 && content.length > 50) {
-    score += 5;
-    penalties.push("excessive_whitespace");
+  // RULE 4: gibberish (+10)
+  //   average word length < 2   OR   more than 30% of words are longer than 15 letters
+  const allWords = getWords(content);
+  const wordCount = allWords.length;
+
+  if (wordCount > 0) {
+    let totalLetters = 0;
+    let longWords = 0;
+
+    for (let i = 0; i < wordCount; i++) {
+      totalLetters = totalLetters + allWords[i].length;
+
+      if (allWords[i].length > 15) {
+        longWords = longWords + 1;
+      }
+    }
+
+    const averageWordLength = totalLetters / wordCount;
+    const longWordRatio = longWords / wordCount;
+
+    if (averageWordLength < 2 || longWordRatio > 0.3) {
+      score = score + 10;
+      addToList(penalties, "gibberish_content");
+    }
+  }
+
+  // RULE 5: fewer than 5 words (+5)
+  if (wordCount < 5) {
+    score = score + 5;
+    addToList(penalties, "minimal_content");
+  }
+
+  // RULE 6: too much empty space (+5)
+  //   average characters per line < 3   AND   note is longer than 50 characters
+  let lineCount = 1;
+
+  for (let i = 0; i < content.length; i++) {
+    if (content[i] === "\n") {
+      lineCount = lineCount + 1;
+    }
+  }
+
+  const averageCharactersPerLine = content.length / lineCount;
+
+  if (averageCharactersPerLine < 3 && content.length > 50) {
+    score = score + 5;
+    addToList(penalties, "excessive_whitespace");
   }
 
   return {
-    score: Math.min(score, 100),
+    score: score > 100 ? 100 : score,
     isSpam: score >= 60,
     isWarning: score >= 40 && score < 60,
     penalties,
@@ -101,34 +257,21 @@ export function computeNoteSpamScore(content, existingNotes = []) {
   };
 }
 
-/**
- * Check similarity between current content and existing notes
- * Returns similarity percentage (0-100)
- */
+// How similar two notes are, from 0 to 100 (percent).
 export function checkNoteSimilarity(newContent, existingNote) {
-  const newWords = new Set(
-    (newContent.toLowerCase().match(/\b\w{4,}\b/g) || []).filter(
-      (w) => w.length <= 20
-    )
-  );
+  const newWords = getUniqueWords(newContent);
+  const oldWords = getUniqueWords(existingNote.content);
 
-  const existingWords = new Set(
-    (existingNote.content.toLowerCase().match(/\b\w{4,}\b/g) || []).filter(
-      (w) => w.length <= 20
-    )
-  );
-
-  if (newWords.size === 0 || existingWords.size === 0) {
+  if (newWords.list.length === 0 || oldWords.list.length === 0) {
     return 0;
   }
 
-  const intersection = new Set([...newWords].filter((w) => existingWords.has(w)));
-  const union = new Set([...newWords, ...existingWords]);
-  const jaccardSimilarity = intersection.size / union.size;
-
-  return Math.round(jaccardSimilarity * 100);
+  return roundToWholeNumber(jaccardSimilarity(newWords, oldWords) * 100);
 }
 
+// SHA-256 fingerprint of a note (used by Rule 1).
+// Node's crypto, trim and toLowerCase are kept here on purpose: this hash is saved in the
+// database, so it must stay exactly the same as before or old copies would not be found.
 export function computeContentHash(content) {
   return crypto
     .createHash("sha256")

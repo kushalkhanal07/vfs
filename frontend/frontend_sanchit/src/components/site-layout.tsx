@@ -46,7 +46,7 @@ export function SiteHeader() {
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/10 text-white transition-transform group-hover:scale-105">
             <Sparkles className="h-5 w-5" />
           </span>
-          <span className="text-lg font-semibold tracking-tight text-white">Sanchit</span>
+          <span className="text-lg font-semibold tracking-tight text-white">StudyVault</span>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
@@ -136,7 +136,7 @@ export function SiteFooter() {
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-black text-white">
               <Sparkles className="h-5 w-5" />
             </span>
-            <span className="text-lg font-semibold text-black">Sanchit</span>
+            <span className="text-lg font-semibold text-black">StudyVault</span>
           </Link>
           <p className="mt-3 max-w-xs text-sm text-gray-600">
             A vault for learning. Smart storage, spaced repetition, and AI-grade search built for
@@ -195,7 +195,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-gray-500 sm:flex-row sm:px-6 lg:px-8">
-          <p>© {new Date().getFullYear()} Sanchit — A Vault for Learning.</p>
+          <p>© {new Date().getFullYear()} StudyVault — A Vault for Learning.</p>
           <p>Built for students who think ahead.</p>
         </div>
       </div>

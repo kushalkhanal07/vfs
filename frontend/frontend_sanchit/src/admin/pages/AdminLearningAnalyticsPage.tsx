@@ -79,7 +79,7 @@ export function AdminLearningAnalyticsPage() {
                 <XAxis dataKey="subject" tick={{ fill: "#cbd5e1", fontSize: 11 }} />
                 <YAxis tick={{ fill: "#cbd5e1", fontSize: 11 }} />
                 <Tooltip contentStyle={{ background: "#020617", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }} />
-                <Bar dataKey="mastery" fill="#3b82f6" radius={[10, 10, 0, 0]} />
+                <Bar dataKey="mastery" fill="#35ab8b" radius={[10, 10, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -111,7 +111,7 @@ export function AdminLearningAnalyticsPage() {
                 <YAxis tick={{ fill: "#cbd5e1", fontSize: 11 }} />
                 <Tooltip contentStyle={{ background: "#020617", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }} />
                 <Legend />
-                <Line type="monotone" dataKey="activities" stroke="#3b82f6" strokeWidth={3} dot={false} />
+                <Line type="monotone" dataKey="activities" stroke="#35ab8b" strokeWidth={3} dot={false} />
                 <Line type="monotone" dataKey="focusMinutes" stroke="#34d399" strokeWidth={3} dot={false} />
               </LineChart>
             </ResponsiveContainer>

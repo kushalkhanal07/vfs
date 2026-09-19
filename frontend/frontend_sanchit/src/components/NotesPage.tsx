@@ -355,9 +355,6 @@ export function NotesPage() {
             </button>
           ))}
           <div className="h-5 w-px bg-border mx-1" />
-          <button className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg gradient-primary text-primary-foreground text-xs font-medium ml-auto">
-            <Sparkles className="size-3.5" /> AI assist
-          </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 md:p-10">

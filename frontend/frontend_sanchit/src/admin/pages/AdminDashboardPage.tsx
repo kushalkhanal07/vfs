@@ -4,7 +4,7 @@ import { ResponsiveContainer, CartesianGrid, Tooltip, Legend, LineChart as ReLin
 import { getAdminDashboard } from "@/api/admin";
 import { AdminSectionCard, AdminStateCard, LoadingState, StatCard, formatBytes } from "@/admin/components/AdminWidgets";
 
-const COLORS = ["#3b82f6", "#60a5fa", "#f59e0b", "#a78bfa", "#34d399", "#fb7185"];
+const COLORS = ["#35ab8b", "#74ccae", "#f59e0b", "#a78bfa", "#34d399", "#fb7185"];
 
 export function AdminDashboardPage() {
   const [data, setData] = useState<any>(null);
@@ -73,7 +73,7 @@ export function AdminDashboardPage() {
                 <YAxis tick={{ fill: "#cbd5e1", fontSize: 11 }} />
                 <Tooltip contentStyle={{ background: "#020617", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }} />
                 <Legend />
-                <Line type="monotone" dataKey="count" stroke="#3b82f6" strokeWidth={3} dot={false} />
+                <Line type="monotone" dataKey="count" stroke="#35ab8b" strokeWidth={3} dot={false} />
               </ReLineChart>
             </ResponsiveContainer>
           </div>
@@ -88,7 +88,7 @@ export function AdminDashboardPage() {
                 <YAxis tick={{ fill: "#cbd5e1", fontSize: 11 }} />
                 <Tooltip contentStyle={{ background: "#020617", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }} />
                 <Legend />
-                <Bar dataKey="count" fill="#3b82f6" radius={[10, 10, 0, 0]} />
+                <Bar dataKey="count" fill="#35ab8b" radius={[10, 10, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

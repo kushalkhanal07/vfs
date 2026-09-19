@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { HardDrive } from "lucide-react";
@@ -10,11 +10,29 @@ interface StorageInfo {
   storageLimit: number;
   storagePercent: number;
   subscriptionActive: boolean;
+  upgrade?: {
+    available: boolean;
+    bytes: number;
+    amount: number; // smallest currency unit, e.g. cents
+    currency: string;
+  };
+}
+
+type WidgetMessage = { type: "success" | "error" | "info"; text: string };
+
+function getErrorMessage(err: unknown, fallback: string) {
+  if (axios.isAxiosError(err)) {
+    return err.response?.data?.error || err.response?.data?.message || fallback;
+  }
+  return fallback;
 }
 
 export function StorageWidget() {
   const [storage, setStorage] = useState<StorageInfo | null>(null);
   const [loading, setLoading] = useState(true);
+  const [upgrading, setUpgrading] = useState(false);
+  const [message, setMessage] = useState<WidgetMessage | null>(null);
+  const confirmStarted = useRef(false);
 
   useEffect(() => {
     const fetchStorage = async () => {
@@ -43,6 +61,63 @@ export function StorageWidget() {
     };
   }, []);
 
+  // Stripe sends the user back to /dashboard?stripe_checkout=success&session_id=...
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const checkoutStatus = params.get("stripe_checkout");
+    if (!checkoutStatus) return;
+
+    const sessionId = params.get("session_id");
+
+    // Clean the address bar so a refresh does not run this again
+    params.delete("stripe_checkout");
+    params.delete("session_id");
+    const query = params.toString();
+    window.history.replaceState(window.history.state, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
+
+    if (checkoutStatus === "cancelled") {
+      setMessage({ type: "info", text: "Payment cancelled. Your storage was not changed." });
+      return;
+    }
+
+    if (checkoutStatus !== "success" || !sessionId || confirmStarted.current) return;
+    confirmStarted.current = true;
+
+    axios
+      .post(`${API_BASE}/user/stripe/confirm-upgrade`, { sessionId }, { withCredentials: true })
+      .then((response) => {
+        setMessage({ type: "success", text: response.data?.message || "Storage upgraded" });
+        window.dispatchEvent(new Event("storage-updated"));
+      })
+      .catch((err) => {
+        setMessage({ type: "error", text: getErrorMessage(err, "Could not confirm your payment") });
+      });
+  }, []);
+
+  const handleUpgrade = async () => {
+    setUpgrading(true);
+    setMessage(null);
+
+    try {
+      const response = await axios.post(
+        `${API_BASE}/user/stripe/create-checkout-session`,
+        {},
+        { withCredentials: true }
+      );
+
+      if (response.data?.url) {
+        window.location.href = response.data.url;
+        return;
+      }
+
+      setMessage({ type: "error", text: response.data?.message || "Could not start checkout" });
+    } catch (err) {
+      setMessage({ type: "error", text: getErrorMessage(err, "Could not start checkout") });
+    }
+
+    setUpgrading(false);
+  };
+
   if (loading || !storage) {
     return (
       <div className="bg-blue-50 backdrop-blur border border-white/10 rounded-xl p-6 skeleton h-full min-h-40">
@@ -58,6 +133,14 @@ export function StorageWidget() {
   const remaining = storage.storageLimit - storage.storageUsed;
   const remainingMB = (remaining / 1048576).toFixed(2);
 
+  const upgrade = storage.upgrade;
+  const upgradeMB = upgrade ? Math.round(upgrade.bytes / 1048576) : 0;
+  const upgradePrice = upgrade
+    ? new Intl.NumberFormat("en-US", { style: "currency", currency: upgrade.currency.toUpperCase() }).format(
+        upgrade.amount / 100
+      )
+    : "";
+
   // Use purposeful solid colors for storage states: blue (ok), amber (high), rose (critical)
   const getProgressColor = (percent: number) => {
         // Blue-only theme: different blue shades for levels
@@ -66,8 +149,10 @@ export function StorageWidget() {
         return "bg-blue-700";
   };
 
-  const getProgressBgColor = (percent: number) => {
-      return "bg-blue-50";
+  const messageClasses: Record<WidgetMessage["type"], string> = {
+    success: "border-blue-200 bg-blue-50 text-blue-900",
+    info: "border-blue-200 bg-white text-blue-800",
+    error: "border-red-200 bg-red-50 text-red-700",
   };
 
   return (
@@ -94,7 +179,7 @@ export function StorageWidget() {
         <div className="mb-2 h-2 overflow-hidden rounded-full bg-blue-50">
           <motion.div
             initial={{ width: 0 }}
-            animate={{ width: `${storage.storagePercent}%` }}
+            animate={{ width: `${Math.min(storage.storagePercent, 100)}%` }}
             transition={{ duration: 1, ease: "easeOut" }}
             className={`h-full ${getProgressColor(storage.storagePercent)}`}
           />
@@ -124,7 +209,7 @@ export function StorageWidget() {
           className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3"
         >
           <p className="text-xs font-semibold text-blue-900">
-            Storage almost full. Delete files to free up space.
+            Storage almost full. Increase your storage or delete files to free up space.
           </p>
         </motion.div>
       )}
@@ -141,14 +226,28 @@ export function StorageWidget() {
         </motion.div>
       )}
 
-      {/* Action Button */}
+      {/* Action Button: buy more storage with Stripe */}
       <motion.button
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+        type="button"
+        onClick={handleUpgrade}
+        disabled={upgrading || !upgrade?.available}
+        whileHover={{ scale: upgrading || !upgrade?.available ? 1 : 1.02 }}
+        whileTap={{ scale: upgrading || !upgrade?.available ? 1 : 0.98 }}
+        className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        Manage Files →
+        {!upgrade?.available
+          ? "Storage upgrades unavailable"
+          : upgrading
+            ? "Redirecting to Stripe…"
+            : `Increase storage +${upgradeMB} MB · ${upgradePrice}`}
       </motion.button>
+
+      {message && (
+        <div className={`mt-3 rounded-lg border px-3 py-2 text-xs font-medium ${messageClasses[message.type]}`}>
+          {message.text}
+        </div>
+      )}
+
         {storage.subscriptionActive && (
           <div className="mt-2 flex items-center gap-2 px-3">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white text-xs font-medium">✓</span>

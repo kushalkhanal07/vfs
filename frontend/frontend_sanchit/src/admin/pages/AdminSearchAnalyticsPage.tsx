@@ -62,7 +62,7 @@ export function AdminSearchAnalyticsPage() {
                 <XAxis dataKey="query" tick={{ fill: "#cbd5e1", fontSize: 11 }} />
                 <YAxis tick={{ fill: "#cbd5e1", fontSize: 11 }} />
                 <Tooltip contentStyle={{ background: "#020617", border: "1px solid rgba(255,255,255,0.12)", color: "#fff" }} />
-                <Bar dataKey="count" fill="#3b82f6" radius={[10, 10, 0, 0]} />
+                <Bar dataKey="count" fill="#35ab8b" radius={[10, 10, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

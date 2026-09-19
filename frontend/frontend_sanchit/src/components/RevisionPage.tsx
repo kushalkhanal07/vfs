@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AddRevisionSessionModal } from "@/components/AddRevisionSessionModal";
+import { RevisionPriorityCard } from "@/components/RevisionPriorityCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -328,6 +329,8 @@ export function RevisionPage() {
           <span>{error}</span>
         </div>
       )}
+
+      <RevisionPriorityCard refreshKey={sessions} />
 
       {viewMode === "calendar" ? (
         <div className="grid gap-4 xl:grid-cols-[1fr]">

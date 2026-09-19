@@ -4,10 +4,10 @@ import { AuthShell } from "@/components/auth-shell";
 export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
-      { title: "Create account — Sanchit" },
+      { title: "Create account — StudyVault" },
       {
         name: "description",
-        content: "Create your free Sanchit account and build a smarter learning vault.",
+        content: "Create your free StudyVault account and build a smarter learning vault.",
       },
     ],
   }),

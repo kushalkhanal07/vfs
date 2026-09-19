@@ -68,6 +68,11 @@ const revisionSessionSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    // Optional exam date: used by the revision priority score (exam urgency)
+    examDate: {
+      type: Date,
+      default: null,
+    },
     status: {
       type: String,
       enum: ["scheduled", "completed", "cancelled"],

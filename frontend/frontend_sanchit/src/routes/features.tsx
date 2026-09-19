@@ -15,13 +15,13 @@ import { SectionHeading, CTASection } from "@/components/marketing";
 export const Route = createFileRoute("/features")({
   head: () => ({
     meta: [
-      { title: "Features — Sanchit" },
+      { title: "Features — StudyVault" },
       {
         name: "description",
         content:
-          "Explore Sanchit's features: smart vault, AI search, spam detection, spaced repetition, priority revision, analytics, and more.",
+          "Explore StudyVault's features: smart vault, AI search, spam detection, spaced repetition, priority revision, analytics, and more.",
       },
-      { property: "og:title", content: "Features — Sanchit" },
+      { property: "og:title", content: "Features — StudyVault" },
       { property: "og:description", content: "A complete intelligent learning toolkit." },
     ],
   }),
@@ -38,7 +38,7 @@ const features = [
   {
     icon: Search,
     title: "AI-like Smart Search",
-    desc: "Ask in natural language. Sanchit understands intent, ranks by relevance, and shows the snippet that matters.",
+    desc: "Ask in natural language. StudyVault understands intent, ranks by relevance, and shows the snippet that matters.",
     points: ["Semantic search", "Intent detection", "Inline snippets"],
   },
   {
@@ -90,7 +90,7 @@ function FeaturesPage() {
               Every tool a serious learner <span className="text-gradient">actually needs</span>
             </>
           }
-          description="Sanchit isn't a notes app. It's a full intelligent learning system designed around how memory really works."
+          description="StudyVault isn't a notes app. It's a full intelligent learning system designed around how memory really works."
         />
       </section>
 

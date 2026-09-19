@@ -14,7 +14,7 @@ export function AdminSubjectsPage() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState({ name: "", description: "", color: "#3b82f6", active: true, order: 0 });
+  const [form, setForm] = useState({ name: "", description: "", color: "#35ab8b", active: true, order: 0 });
 
   const load = async () => {
     setLoading(true);
@@ -34,7 +34,7 @@ export function AdminSubjectsPage() {
 
   const openCreate = () => {
     setEditing(null);
-    setForm({ name: "", description: "", color: "#3b82f6", active: true, order: 0 });
+    setForm({ name: "", description: "", color: "#35ab8b", active: true, order: 0 });
     setDialogOpen(true);
   };
 
@@ -44,7 +44,7 @@ export function AdminSubjectsPage() {
     setForm({
       name: subject.name || "",
       description: subject.description || "",
-      color: subject.color || "#3b82f6",
+      color: subject.color || "#35ab8b",
       active: subject.active !== false,
       order: subject.order || 0,
     });
@@ -134,7 +134,7 @@ export function AdminSubjectsPage() {
           <div className="space-y-3">
             <Input value={form.name} onChange={(e) => setForm((current) => ({ ...current, name: e.target.value }))} placeholder="Subject name" className="border-white/10 bg-white/5 text-slate-100 placeholder:text-slate-500" />
             <Input value={form.description} onChange={(e) => setForm((current) => ({ ...current, description: e.target.value }))} placeholder="Description" className="border-white/10 bg-white/5 text-slate-100 placeholder:text-slate-500" />
-            <Input value={form.color} onChange={(e) => setForm((current) => ({ ...current, color: e.target.value }))} placeholder="#3b82f6" className="border-white/10 bg-white/5 text-slate-100 placeholder:text-slate-500" />
+            <Input value={form.color} onChange={(e) => setForm((current) => ({ ...current, color: e.target.value }))} placeholder="#35ab8b" className="border-white/10 bg-white/5 text-slate-100 placeholder:text-slate-500" />
             <Input type="number" value={form.order} onChange={(e) => setForm((current) => ({ ...current, order: Number(e.target.value) }))} placeholder="Order" className="border-white/10 bg-white/5 text-slate-100 placeholder:text-slate-500" />
             <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
               <span>Active</span>

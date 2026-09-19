@@ -1,5 +1,6 @@
+import crypto from "crypto";
 import { createWriteStream } from "fs";
-import { rm } from "fs/promises";
+import { readFile, rm } from "fs/promises";
 import path from "path";
 import Directory from "../models/directoryModel.js";
 import File from "../models/fileModel.js";
@@ -129,6 +130,48 @@ function detectSpam(filename, contentBuffer) {
   };
 }
 
+// SHA-256 fingerprint of the file bytes. Same bytes always give the same hash,
+// even if the file name is different.
+function computeFileHash(buffer) {
+  return crypto.createHash("sha256").update(buffer).digest("hex");
+}
+
+// Find an active (not deleted) file of this user with the same content.
+// Files uploaded before hashing existed have no fileHash yet: those with the same
+// size are hashed from disk once, and the hash is saved for next time.
+async function findDuplicateFile(userId, fileHash, fileSize, excludeFileId = null) {
+  const excludeFilter = excludeFileId ? { _id: { $ne: excludeFileId } } : {};
+
+  const match = await File.findOne({ userId, fileHash, deleted: false, ...excludeFilter })
+    .select("name")
+    .lean();
+  if (match) return match;
+
+  const oldFiles = await File.find({
+    userId,
+    deleted: false,
+    size: fileSize,
+    fileHash: { $exists: false },
+    ...excludeFilter,
+  }).select("name extension");
+
+  for (const oldFile of oldFiles) {
+    try {
+      const oldFileHash = computeFileHash(await readFile(`./storage/${oldFile.id}${oldFile.extension}`));
+      oldFile.fileHash = oldFileHash;
+      await oldFile.save();
+
+      if (oldFileHash === fileHash) {
+        return { _id: oldFile._id, name: oldFile.name };
+      }
+    } catch (err) {
+      // File missing on disk: nothing to compare
+    }
+  }
+
+  return null;
+}
+
 export const uploadFile = async (req, res, next) => {
   const parentDirId = req.params.parentDirId || req.user.rootDirId;
   try {
@@ -170,6 +213,16 @@ export const uploadFile = async (req, res, next) => {
         message: `Your storage is full. You have ${user.storageLimit - user.storageUsed} bytes remaining.`,
         storageUsed: user.storageUsed,
         storageLimit: user.storageLimit,
+      });
+    }
+
+    // Duplicate check: block files whose content is already in the user's vault
+    const fileHash = computeFileHash(contentBuffer);
+    const duplicate = await findDuplicateFile(req.user._id, fileHash, fileSize);
+    if (duplicate) {
+      return res.status(409).json({
+        error: `Duplicate file: this content is already in your vault as "${duplicate.name}"`,
+        existingFileId: duplicate._id,
       });
     }
 
@@ -216,6 +269,7 @@ export const uploadFile = async (req, res, next) => {
       parentDirId: parentDirData._id,
       userId: req.user._id,
       size: fileSize,
+      fileHash,
       lastAccessed: new Date(),
       accessCount: 0,
       isShared: false,
@@ -357,6 +411,15 @@ export const restoreFile = async (req, res, next) => {
   try {
     if (!file.deleted) {
       return res.status(200).json({ message: "File is already active" });
+    }
+
+    if (file.fileHash) {
+      const duplicate = await findDuplicateFile(req.user._id, file.fileHash, file.size, file._id);
+      if (duplicate) {
+        return res.status(409).json({
+          error: `Cannot restore: the same content already exists as "${duplicate.name}"`,
+        });
+      }
     }
 
     const user = await User.findById(req.user._id);

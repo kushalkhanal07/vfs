@@ -6,13 +6,13 @@ import { SectionHeading, CTASection } from "@/components/marketing";
 export const Route = createFileRoute("/testimonials")({
   head: () => ({
     meta: [
-      { title: "Testimonials — Sanchit" },
+      { title: "Testimonials — StudyVault" },
       {
         name: "description",
         content:
-          "Real stories from students using Sanchit to study smarter, retain more, and stress less.",
+          "Real stories from students using StudyVault to study smarter, retain more, and stress less.",
       },
-      { property: "og:title", content: "Student stories — Sanchit" },
+      { property: "og:title", content: "Student stories — StudyVault" },
       { property: "og:description", content: "Productivity wins from real learners." },
     ],
   }),
@@ -29,7 +29,7 @@ const reviews = [
   {
     name: "Rohit Verma",
     role: "CS · Year 2",
-    body: "The smart search alone is worth it. I ask questions in plain English and Sanchit pulls the exact note.",
+    body: "The smart search alone is worth it. I ask questions in plain English and StudyVault pulls the exact note.",
     rating: 5,
   },
   {
@@ -62,7 +62,7 @@ const stories = [
   {
     metric: "+38%",
     label: "Average exam score lift",
-    desc: "Across 1,200 students who used Sanchit for one full semester.",
+    desc: "Across 1,200 students who used StudyVault for one full semester.",
   },
   {
     metric: "5h",

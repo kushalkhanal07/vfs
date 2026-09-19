@@ -48,6 +48,7 @@ export const normalizeRevisionSessionPayload = (payload = {}) => {
     reminderEnabled: Boolean(payload.reminderEnabled),
     reminderInterval: payload.reminderInterval != null ? Number(payload.reminderInterval) : null,
     examBoost: Boolean(payload.examBoost),
+    examDate: parseRevisionDate(payload.examDate),
   };
 };
 

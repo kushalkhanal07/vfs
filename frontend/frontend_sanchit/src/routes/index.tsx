@@ -22,13 +22,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Sanchit — A Vault for Learning" },
+      { title: "StudyVault — A Vault for Learning" },
       {
         name: "description",
         content:
           "Smart academic vault and productivity platform for students. Spaced repetition, AI-grade search, intelligent file organization.",
       },
-      { property: "og:title", content: "Sanchit — A Vault for Learning" },
+      { property: "og:title", content: "StudyVault — A Vault for Learning" },
       { property: "og:description", content: "The next-generation student productivity platform." },
     ],
   }),
@@ -64,7 +64,7 @@ const features = [
     icon: Layers,
     title: "Priority-Based Revision",
     description:
-      "Sanchit ranks what matters most before exams using mastery, recency, and weightage signals.",
+      "StudyVault ranks what matters most before exams using mastery, recency, and weightage signals.",
   },
   {
     icon: BarChart3,
@@ -78,7 +78,7 @@ const steps = [
   {
     n: "01",
     title: "Upload your material",
-    desc: "Drop notes, PDFs, slides, and links. Sanchit indexes and tags everything in seconds.",
+    desc: "Drop notes, PDFs, slides, and links. StudyVault indexes and tags everything in seconds.",
   },
   {
     n: "02",
@@ -108,7 +108,7 @@ const testimonials = [
   {
     name: "Rohit Verma",
     role: "CS · Year 2",
-    body: "The smart search alone is worth it. I ask questions in plain English and Sanchit pulls the exact note.",
+    body: "The smart search alone is worth it. I ask questions in plain English and StudyVault pulls the exact note.",
   },
   {
     name: "Maya Iyer",
@@ -119,8 +119,8 @@ const testimonials = [
 
 const faqs = [
   {
-    q: "What is Sanchit?",
-    a: "Sanchit is a smart academic vault that combines storage, semantic search, spam filtering, and spaced repetition to help students learn deeply and revise efficiently.",
+    q: "What is StudyVault?",
+    a: "StudyVault is a smart academic vault that combines storage, semantic search, spam filtering, and spaced repetition to help students learn deeply and revise efficiently.",
   },
   {
     q: "Is my data secure?",
@@ -128,7 +128,7 @@ const faqs = [
   },
   {
     q: "Does it work for any subject?",
-    a: "Sanchit is subject-agnostic. From medicine to law to engineering — anything that needs notes, files, and revision works beautifully.",
+    a: "StudyVault is subject-agnostic. From medicine to law to engineering — anything that needs notes, files, and revision works beautifully.",
   },
   {
     q: "Is there a free plan?",
@@ -152,7 +152,7 @@ function HomePage() {
               Your second brain for <span className="text-gradient">academic mastery</span>
             </h1>
             <p className="animate-fade-in-up delay-200 mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
-              Sanchit is a vault for learning — smart storage, AI-grade search, and spaced
+              StudyVault is a vault for learning — smart storage, AI-grade search, and spaced
               repetition that turns scattered notes into long-term knowledge.
             </p>
             <div className="animate-fade-in-up delay-300 mt-8 flex flex-wrap items-center justify-center gap-3">

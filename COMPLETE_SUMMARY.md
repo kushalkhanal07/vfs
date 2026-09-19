@@ -5,8 +5,8 @@
 Your MERN application has been completely extended with **40+ production-ready APIs** across **3 applications**:
 
 - **Backend (server/)** - API endpoints
-- **Frontend Sanchit (frontend_sanchit/)** - React web app
-- **Dashboard Sanchit (dashboard_sanchit/)** - Integrated dashboard
+- **Frontend StudyVault (frontend_sanchit/)** - React web app
+- **Dashboard StudyVault (dashboard_sanchit/)** - Integrated dashboard
 
 ---
 
@@ -124,7 +124,7 @@ Documentation:
 └── IMPLEMENTATION_SUMMARY.md    (Detailed)
 ```
 
-### Frontend Sanchit (frontend_sanchit/src/api)
+### Frontend StudyVault (frontend_sanchit/src/api)
 
 ```
 api/
@@ -136,7 +136,7 @@ api/
 └── user.ts           (NEW - 2 functions)
 ```
 
-### Dashboard Sanchit (dashboard_sanchit/src/api)
+### Dashboard StudyVault (dashboard_sanchit/src/api)
 
 ```
 api/
@@ -327,13 +327,13 @@ useEffect(() => {
 - [x] Error handling implemented
 - [x] TypeScript ready
 
-### Frontend Sanchit
+### Frontend StudyVault
 - [x] All API clients updated to new endpoints
 - [x] TypeScript types added
 - [x] Error handling included
 - [x] 6 API modules complete
 
-### Dashboard Sanchit
+### Dashboard StudyVault
 - [x] All API clients created
 - [x] TypeScript types added
 - [x] Centralized exports
@@ -351,7 +351,7 @@ useEffect(() => {
 
 ## 🎓 Component Examples Available
 
-### For Frontend Sanchit & Dashboard Sanchit:
+### For Frontend StudyVault & Dashboard StudyVault:
 
 1. **Notes Manager Component**
    - Create, read, update, delete
@@ -449,11 +449,11 @@ Component State Update
 - 1 Utility
 - 4 Documentation files
 
-**Frontend Sanchit:**
+**Frontend StudyVault:**
 - 2 New API files (dashboard.ts, user.ts)
 - 4 Updated API files
 
-**Dashboard Sanchit:**
+**Dashboard StudyVault:**
 - 7 New API files
 - 1 Integration guide
 

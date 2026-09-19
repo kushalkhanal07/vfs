@@ -97,8 +97,8 @@ export function AdminLayout() {
     [pathname],
   );
   const backgroundImage = dark
-    ? "radial-gradient(circle_at_top, rgba(59,130,246,0.12), transparent 32%), linear-gradient(180deg, #020617 0%, #0f172a 42%, #111827 100%)"
-    : "radial-gradient(circle_at_top, rgba(59,130,246,0.14), transparent 34%), linear-gradient(180deg, #eff6ff 0%, #e2e8f0 52%, #dbeafe 100%)";
+    ? "radial-gradient(circle_at_top, rgba(25,144,119,0.16), transparent 32%), linear-gradient(180deg, #04120f 0%, #0a1f1a 42%, #0d1f1b 100%)"
+    : "radial-gradient(circle_at_top, rgba(25,144,119,0.14), transparent 34%), linear-gradient(180deg, #f0faf6 0%, #eaf2ef 52%, #d8f2e7 100%)";
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
@@ -138,7 +138,7 @@ export function AdminLayout() {
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.3em] text-blue-700/70 dark:text-blue-200/70">Admin Panel</p>
-              <h1 className="font-display text-lg font-semibold">Sanchit Control</h1>
+              <h1 className="font-display text-lg font-semibold">StudyVault Control</h1>
             </div>
           </div>
 
@@ -152,7 +152,7 @@ export function AdminLayout() {
                   to={item.url}
                   className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all ${
                     active
-                      ? "bg-blue-500/15 text-blue-900 shadow-[0_0_0_1px_rgba(59,130,246,0.22)] dark:text-blue-50"
+                      ? "bg-blue-500/15 text-blue-900 shadow-[0_0_0_1px_rgba(25,144,119,0.28)] dark:text-blue-50"
                       : "text-slate-600 hover:bg-blue-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white"
                   }`}
                 >
@@ -187,7 +187,7 @@ export function AdminLayout() {
               <div className="min-w-0 flex-1">
                 <p className="text-[11px] uppercase tracking-[0.3em] text-blue-700/70 dark:text-blue-200/70">{activeNav.title}</p>
                 <div className="mt-1 flex items-center gap-3">
-                  <h2 className="truncate font-display text-xl font-semibold text-slate-900 dark:text-white lg:text-2xl">Sanchit Admin</h2>
+                  <h2 className="truncate font-display text-xl font-semibold text-slate-900 dark:text-white lg:text-2xl">StudyVault Admin</h2>
                   {user ? (
                     <span className="hidden rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[11px] font-medium text-blue-700 sm:inline-flex dark:border-blue-400/20 dark:bg-blue-500/10 dark:text-blue-100">
                       {user.name}

@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
+import { NetworkProvider } from "@/components/network";
 
 import appCss from "../styles.css?url";
 
@@ -88,14 +89,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sanchit — A Vault for Learning" },
+      { title: "StudyVault — A Vault for Learning" },
       {
         name: "description",
         content:
           "Smart academic vault and productivity platform for students. Spaced repetition, smart search, intelligent file storage.",
       },
-      { name: "author", content: "Sanchit" },
-      { property: "og:title", content: "Sanchit — A Vault for Learning" },
+      { name: "author", content: "StudyVault" },
+      { property: "og:title", content: "StudyVault — A Vault for Learning" },
       { property: "og:description", content: "The next-generation student productivity platform." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -135,8 +136,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <Toaster richColors position="top-right" />
+      <NetworkProvider>
+        <Outlet />
+      </NetworkProvider>
+      <Toaster richColors position="top-right" closeButton />
     </QueryClientProvider>
   );
 }

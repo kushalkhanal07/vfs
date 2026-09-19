@@ -9,6 +9,7 @@ import File from "../models/fileModel.js";
 import Directory from "../models/directoryModel.js";
 import { createNotification } from "./notificationController.js";
 import { SM2Service } from "../services/sm2Service.js";
+import { getSubjectPriorities } from "../services/revisionPriorityService.js";
 
 // ADD CONTENT TO REVISION
 export const addToRevision = async (req, res, next) => {
@@ -247,6 +248,16 @@ export const getRevisionStats = async (req, res, next) => {
       completedRevisions,
       stats,
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// GET REVISION PRIORITY RANKING (which subject to revise first)
+export const getRevisionPriorities = async (req, res, next) => {
+  try {
+    const subjects = await getSubjectPriorities(req.user._id);
+    res.json({ subjects, count: subjects.length });
   } catch (err) {
     next(err);
   }

@@ -65,6 +65,7 @@ export const createRevisionSession = async (req, res, next) => {
       reminderEnabled: normalized.reminderEnabled,
       reminderInterval: normalized.reminderEnabled ? normalized.reminderInterval ?? 10 : null,
       examBoost: normalized.examBoost,
+      examDate: normalized.examDate,
       status: "scheduled",
     });
 
@@ -191,6 +192,8 @@ export const updateRevisionSession = async (req, res, next) => {
       reminderEnabled: req.body.reminderEnabled ?? existing.reminderEnabled,
       reminderInterval: req.body.reminderInterval ?? existing.reminderInterval,
       examBoost: req.body.examBoost ?? existing.examBoost,
+      // "in" check so the client can clear the exam date by sending null
+      examDate: "examDate" in req.body ? req.body.examDate : existing.examDate,
     });
 
     const errors = validatePayload(normalized);
@@ -210,6 +213,7 @@ export const updateRevisionSession = async (req, res, next) => {
     existing.reminderEnabled = normalized.reminderEnabled;
     existing.reminderInterval = normalized.reminderEnabled ? normalized.reminderInterval ?? existing.reminderInterval ?? 10 : null;
     existing.examBoost = normalized.examBoost;
+    existing.examDate = normalized.examDate;
 
     await existing.save();
 

@@ -31,6 +31,7 @@ export interface RevisionSession {
   reminderEnabled: boolean;
   reminderInterval?: number | null;
   examBoost: boolean;
+  examDate?: string | null;
   status: RevisionSessionStatus;
   scheduledAt?: string;
   createdAt?: string;
@@ -50,6 +51,19 @@ export interface RevisionSessionPayload {
   reminderEnabled: boolean;
   reminderInterval?: number | null;
   examBoost: boolean;
+  examDate?: string | null;
+}
+
+export interface SubjectPriority {
+  subject: string;
+  score: number; // 0-100
+  level: "High" | "Medium" | "Low";
+  factors: {
+    daysSinceLastRevision: number | null;
+    recallScore: number | null; // 0-5
+    examDaysLeft: number | null;
+    difficulty: number; // 0-5
+  };
 }
 
 type RevisionSessionTiming = Pick<RevisionSession, "status" | "revisionDate" | "revisionTime" | "duration" | "scheduledAt">;
@@ -180,6 +194,17 @@ export async function getRevisionStats() {
     credentials: "include",
   });
   return parseJsonResponse(res, "Failed to fetch revision stats");
+}
+
+// GET SUBJECT PRIORITY RANKING (highest score = revise first)
+export async function getRevisionPriorities() {
+  const res = await fetch(`${API_BASE}/api/revision/priority`, {
+    credentials: "include",
+  });
+  return parseJsonResponse<{ subjects: SubjectPriority[]; count: number }>(
+    res,
+    "Failed to fetch revision priorities"
+  );
 }
 
 // REMOVE FROM REVISION

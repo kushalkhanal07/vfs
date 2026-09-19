@@ -8,12 +8,12 @@ import { Input } from "@/components/ui/input";
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ — Sanchit" },
+      { title: "FAQ — StudyVault" },
       {
         name: "description",
-        content: "Answers to the most common questions about Sanchit — a vault for learning.",
+        content: "Answers to the most common questions about StudyVault — a vault for learning.",
       },
-      { property: "og:title", content: "FAQ — Sanchit" },
+      { property: "og:title", content: "FAQ — StudyVault" },
       { property: "og:description", content: "Common questions, clear answers." },
     ],
   }),
@@ -25,12 +25,12 @@ const data = [
     category: "Getting started",
     items: [
       {
-        q: "What is Sanchit?",
-        a: "Sanchit is a smart academic vault that combines storage, semantic search, spam filtering, and spaced repetition to help students learn deeply.",
+        q: "What is StudyVault?",
+        a: "StudyVault is a smart academic vault that combines storage, semantic search, spam filtering, and spaced repetition to help students learn deeply.",
       },
       {
         q: "How do I create my vault?",
-        a: "Sign up free, drop your first notes or PDFs, and Sanchit will auto-organize and index everything in seconds.",
+        a: "Sign up free, drop your first notes or PDFs, and StudyVault will auto-organize and index everything in seconds.",
       },
       {
         q: "Is there a mobile app?",
@@ -72,7 +72,7 @@ const data = [
     category: "Pricing",
     items: [
       {
-        q: "Is Sanchit free?",
+        q: "Is StudyVault free?",
         a: "There's a generous free tier. Pro adds advanced analytics, unlimited vaults, and priority support.",
       },
       {

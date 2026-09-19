@@ -52,7 +52,7 @@ function SearchInner() {
           Find anything in your <span className="text-gradient">vault</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-2">
-          Ask in plain language — Sanchit ranks results by meaning, not keywords.
+          Ask in plain language — StudyVault ranks results by meaning, not keywords.
         </p>
       </div>
 

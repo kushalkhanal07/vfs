@@ -51,6 +51,7 @@ type SessionFormPayload = {
   reminderEnabled: boolean;
   reminderInterval?: number | null;
   examBoost: boolean;
+  examDate?: string | null;
 };
 
 type AddRevisionSessionModalProps = {
@@ -83,6 +84,7 @@ export function AddRevisionSessionModal({
   const [reminderMode, setReminderMode] = useState<string>("10");
   const [customReminder, setCustomReminder] = useState<string>("");
   const [examBoost, setExamBoost] = useState(false);
+  const [examDate, setExamDate] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -111,6 +113,7 @@ export function AddRevisionSessionModal({
       setCustomReminder(String(nextReminder));
     }
     setExamBoost(initialSession?.examBoost ?? false);
+    setExamDate(initialSession?.examDate ? initialSession.examDate.split("T")[0] : "");
     setError(null);
   }, [open, defaultDate, initialSession]);
 
@@ -177,6 +180,7 @@ export function AddRevisionSessionModal({
         reminderEnabled,
         reminderInterval: resolvedReminderInterval,
         examBoost,
+        examDate: examBoost && examDate ? examDate : null,
       });
       onOpenChange(false);
     } catch (saveError) {
@@ -356,6 +360,22 @@ export function AddRevisionSessionModal({
                 </div>
                 <Switch checked={examBoost} onCheckedChange={setExamBoost} />
               </div>
+
+              {examBoost && (
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="revision-session-exam-date">Exam Date (optional)</Label>
+                  <Input
+                    id="revision-session-exam-date"
+                    type="date"
+                    min={minDate}
+                    value={examDate}
+                    onChange={(event) => setExamDate(event.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    The closer the exam, the higher this subject moves in your priority ranking.
+                  </p>
+                </div>
+              )}
             </div>
 
             {error && (

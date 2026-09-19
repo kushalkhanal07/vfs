@@ -235,7 +235,7 @@ export function AuthShell({ mode }: { mode: AuthMode }) {
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/15 backdrop-blur">
               <Sparkles className="h-5 w-5" />
             </span>
-            <span className="font-display text-lg font-bold">Sanchit</span>
+            <span className="font-display text-lg font-bold">StudyVault</span>
           </Link>
         </div>
 
@@ -248,7 +248,7 @@ export function AuthShell({ mode }: { mode: AuthMode }) {
           <p className="mt-4 text-primary-foreground/85">
             {isLogin
               ? "Pick up exactly where you left off your notes, schedule, and streak are waiting."
-              : "Sign up free and let Sanchit organize, search, and revise your knowledge intelligently."}
+              : "Sign up free and let StudyVault organize, search, and revise your knowledge intelligently."}
           </p>
           <div className="mt-8 grid gap-3">
             {[
@@ -268,7 +268,7 @@ export function AuthShell({ mode }: { mode: AuthMode }) {
         </div>
 
         <div className="relative text-xs text-primary-foreground/70">
-          © {new Date().getFullYear()} Sanchit — A Vault for Learning.
+          © {new Date().getFullYear()} StudyVault — A Vault for Learning.
         </div>
       </div>
 
@@ -295,7 +295,7 @@ export function AuthShell({ mode }: { mode: AuthMode }) {
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shadow-glow">
                 <Sparkles className="h-5 w-5" />
               </span>
-              <span className="font-display text-lg font-bold">Sanchit</span>
+              <span className="font-display text-lg font-bold">StudyVault</span>
             </div>
 
             <h1 className="font-display text-3xl font-bold sm:text-4xl">
@@ -473,7 +473,7 @@ export function AuthShell({ mode }: { mode: AuthMode }) {
             <p className="mt-6 text-center text-sm text-muted-foreground">
               {isLogin ? (
                 <>
-                  New to Sanchit?{" "}
+                  New to StudyVault?{" "}
                   <Link to="/signup" className="font-semibold text-foreground hover:text-primary">
                     Create an account
                   </Link>

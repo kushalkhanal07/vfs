@@ -72,10 +72,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sanchit — A Vault for Learning" },
+      { title: "StudyVault — A Vault for Learning" },
       { name: "description", content: "Smart vault for students to store, organize, search and revise academic materials." },
-      { name: "author", content: "Sanchit" },
-      { property: "og:title", content: "Sanchit — A Vault for Learning" },
+      { name: "author", content: "StudyVault" },
+      { property: "og:title", content: "StudyVault — A Vault for Learning" },
       { property: "og:description", content: "Smart vault for students to store, organize, search and revise academic materials." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

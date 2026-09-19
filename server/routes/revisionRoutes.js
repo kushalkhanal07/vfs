@@ -26,6 +26,9 @@ router.get("/history", revisionController.getRevisionHistory);
 // Get revision stats
 router.get("/stats", revisionController.getRevisionStats);
 
+// Revision priority ranking (which subject to revise first)
+router.get("/priority", revisionController.getRevisionPriorities);
+
 // Revision sessions CRUD
 router.post("/session", revisionSessionController.createRevisionSession);
 router.get("/session", revisionSessionController.getRevisionSessions);

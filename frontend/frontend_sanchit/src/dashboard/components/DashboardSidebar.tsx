@@ -16,13 +16,22 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { appRoutes } from "@/shared/routes";
+import { getCurrentUser, type CurrentUser } from "@/api/user";
 import axios from "axios";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
 
-const items = [
+type NavItem = {
+  title: string;
+  url: string;
+  icon: typeof LayoutDashboard;
+  /** Hidden from members whose role is a plain "User". */
+  adminOnly?: boolean;
+};
+
+const items: NavItem[] = [
   { title: "Dashboard", url: appRoutes.dashboard, icon: LayoutDashboard },
-  { title: "Users", url: appRoutes.dashboardUsers, icon: Users },
+  { title: "Users", url: appRoutes.dashboardUsers, icon: Users, adminOnly: true },
   { title: "Vault", url: appRoutes.vault, icon: Folder },
   { title: "Notes", url: appRoutes.notes, icon: FileText },
   { title: "Smart Search ", url: appRoutes.smartSearch, icon: Search },
@@ -35,6 +44,7 @@ export function DashboardSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [dark, setDark] = useState(false);
   const [storage, setStorage] = useState<{ used: number; limit: number; percent: number } | null>(null);
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("theme") === "dark";
@@ -61,15 +71,33 @@ export function DashboardSidebar() {
 
     fetchStorage();
 
+    // Fetch the signed-in user so role-restricted nav items can be hidden.
+    const fetchRole = async () => {
+      try {
+        const current: CurrentUser = await getCurrentUser();
+        setRole(current.role ?? null);
+      } catch {
+        setRole(null);
+      }
+    };
+
+    fetchRole();
+
     // Listen for storage updates
     const handleStorageUpdate = () => {
       fetchStorage();
     };
     window.addEventListener("storage-updated", handleStorageUpdate);
+    window.addEventListener("user:refresh", fetchRole);
     return () => {
       window.removeEventListener("storage-updated", handleStorageUpdate);
+      window.removeEventListener("user:refresh", fetchRole);
     };
   }, []);
+
+  // Plain members ("User") never see admin-only entries such as Users.
+  const isPlainUser = (role ?? "User") === "User";
+  const visibleItems = items.filter((item) => !(item.adminOnly && isPlainUser));
 
   const toggleTheme = () => {
     const next = !dark;
@@ -79,22 +107,22 @@ export function DashboardSidebar() {
   };
 
   return (
-    <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-blue-900 bg-blue-900 text-white md:sticky md:top-0 md:flex">
+    <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-blue-800 bg-blue-950 text-white md:sticky md:top-0 md:flex">
       <div className="flex items-center gap-3 px-5 py-6">
-        <div className="flex size-10 items-center justify-center rounded-xl bg-blue-900 text-white">
+        <div className="flex size-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-glow">
           <GraduationCap className="size-5" />
         </div>
         <div>
-          <h1 className="text-base font-semibold leading-none tracking-tight text-white">Sanchit</h1>
-          <p className="mt-1 text-[11px] text-gray-300">Unified Workspace</p>
+          <h1 className="text-base font-semibold leading-none tracking-tight text-white">StudyVault</h1>
+          <p className="mt-1 text-[11px] text-blue-200">Unified Workspace</p>
         </div>
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-2">
-        <p className="px-3 pb-2 pt-3 text-[11px] font-medium uppercase tracking-wider text-white/80">
+        <p className="px-3 pb-2 pt-3 text-[11px] font-medium uppercase tracking-wider text-blue-300/80">
           Dashboard
         </p>
-        {items.map((item) => {
+        {visibleItems.map((item) => {
           const active = pathname === item.url;
 
           return (
@@ -103,8 +131,8 @@ export function DashboardSidebar() {
               to={item.url}
               className={`group flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all ${
                 active
-                  ? "bg-blue-600 text-white"
-                  : "text-white/90 hover:bg-blue-700 hover:text-white"
+                  ? "bg-blue-600 text-white shadow-soft"
+                  : "text-blue-100/90 hover:bg-blue-800 hover:text-white"
               }`}
             >
               <item.icon className={`size-4 transition-transform group-hover:scale-110 ${active ? "text-white" : "text-blue-300"}`} />
@@ -119,26 +147,26 @@ export function DashboardSidebar() {
 
         {/* Storage Indicator */}
         {storage && (
-          <div className="rounded-md border border-blue-700 bg-blue-800 p-3 shadow-sm">
+          <div className="rounded-xl border border-blue-800 bg-blue-900 p-3 shadow-sm">
             <div className="mb-2 flex items-center gap-2">
-              <HardDrive className="h-4 w-4 text-white" />
+              <HardDrive className="h-4 w-4 text-blue-300" />
               <p className="text-xs font-medium text-white">
                 {storage.used} / {storage.limit} MB
               </p>
             </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-blue-600/30">
+            <div className="h-1.5 overflow-hidden rounded-full bg-blue-950">
               <div
                 className={`h-full transition-all ${
                   storage.percent <= 70
-                    ? "bg-blue-600"
+                    ? "bg-blue-400"
                     : storage.percent <= 89
-                    ? "bg-blue-600"
-                    : "bg-blue-700"
+                    ? "bg-warning"
+                    : "bg-destructive"
                 }`}
                 style={{ width: `${Math.min(storage.percent, 100)}%` }}
               />
             </div>
-            <p className="mt-1 text-[10px] text-white/80">
+            <p className="mt-1 text-[10px] text-blue-200/80">
               {storage.percent}% used
             </p>
           </div>
@@ -146,7 +174,7 @@ export function DashboardSidebar() {
 
         <button
           onClick={toggleTheme}
-          className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-gray-300 transition-colors hover:bg-gray-800 hover:text-white"
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-blue-100/90 transition-colors hover:bg-blue-800 hover:text-white"
         >
           {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
           <span>{dark ? "Light mode" : "Dark mode"}</span>

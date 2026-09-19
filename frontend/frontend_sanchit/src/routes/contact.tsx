@@ -21,13 +21,13 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Sanchit" },
+      { title: "Contact — StudyVault" },
       {
         name: "description",
         content:
-          "Get in touch with the Sanchit team. Questions, feedback, partnerships — we'd love to hear from you.",
+          "Get in touch with the StudyVault team. Questions, feedback, partnerships — we'd love to hear from you.",
       },
-      { property: "og:title", content: "Contact Sanchit" },
+      { property: "og:title", content: "Contact StudyVault" },
       { property: "og:description", content: "We're here to help." },
     ],
   }),
@@ -68,13 +68,13 @@ function ContactPage() {
             {
               icon: MapPin,
               title: "Studio",
-              value: "Kathmandu, India",
+              value: "Kathmandu, Nepal",
               desc: "Building remotely worldwide.",
             },
             {
               icon: Phone,
               title: "Phone",
-              value: "+91 80-0000-0000",
+              value: "+977 9843453554",
               desc: "For partnerships & press.",
             },
           ].map((c) => (

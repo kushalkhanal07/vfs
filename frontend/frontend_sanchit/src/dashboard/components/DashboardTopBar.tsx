@@ -73,23 +73,23 @@ export function DashboardTopBar() {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-blue-200 bg-blue-800 text-white">
+    <header className="sticky top-0 z-30 border-b border-blue-800 bg-blue-900 text-white">
       <div className="flex h-16 items-center gap-4 px-4 md:px-8">
         <div className="min-w-0 flex-1">
           <h2 className="truncate text-lg font-semibold tracking-tight text-white md:text-xl">{title}</h2>
           {user ? (
-            <p className="hidden text-xs text-blue-100 md:block">
+            <p className="hidden text-xs text-blue-200 md:block">
               Welcome back, {user.name} ({user.email})
             </p>
           ) : (
-            <p className="hidden text-xs text-blue-100 md:block">
+            <p className="hidden text-xs text-blue-200 md:block">
               Welcome back. You are in the integrated dashboard module.
             </p>
           )}
         </div>
 
-        <div className="hidden w-72 items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 md:flex">
-          <Search className="size-4 text-blue-400" />
+        <div className="hidden w-72 items-center gap-2 rounded-xl border border-blue-800 bg-blue-950/60 px-3 py-2 transition-colors focus-within:border-blue-500 md:flex">
+          <Search className="size-4 text-blue-300" />
           <input
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -99,17 +99,17 @@ export function DashboardTopBar() {
               }
             }}
             placeholder="Search workspace..."
-            className="w-full bg-transparent text-sm text-blue-900 outline-none placeholder:text-blue-300"
+            className="w-full bg-transparent text-sm text-white outline-none placeholder:text-blue-300/70"
           />
         </div>
 
         <Link
           to={appRoutes.notification}
-          className="relative rounded-xl p-2.5 transition-colors hover:bg-blue-700"
+          className="relative rounded-xl p-2.5 transition-colors hover:bg-blue-800"
         >
           <Bell className="size-4 text-white" />
           {unreadNotifications.filter((notification) => !notification.isRead).length > 0 && (
-            <span className="absolute -right-1 -top-1 grid h-4 min-w-4.5 place-items-center rounded-full bg-blue-600 px-1 text-[11px] text-white">
+            <span className="absolute -right-1 -top-1 grid h-4 min-w-4.5 place-items-center rounded-full bg-destructive px-1 text-[11px] text-white">
               {unreadNotifications.filter((notification) => !notification.isRead).length > 9
                 ? "9+"
                 : unreadNotifications.filter((notification) => !notification.isRead).length}
@@ -117,7 +117,7 @@ export function DashboardTopBar() {
           )}
         </Link>
 
-        <button className="hidden items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:inline-flex">
+        <button className="hidden items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-sm font-medium text-white shadow-soft transition-colors hover:bg-blue-500 sm:inline-flex">
           <Plus className="size-4" />
           New
         </button>
@@ -125,7 +125,7 @@ export function DashboardTopBar() {
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-100 disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 rounded-xl border border-blue-700 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-800 disabled:opacity-60"
         >
           <LogOut className="size-4" />
           {isLoggingOut ? "Logging out..." : "Logout"}
@@ -135,7 +135,7 @@ export function DashboardTopBar() {
           {user && (
             <div className="hidden min-w-0 text-right md:block">
               <p className="truncate text-xs font-medium text-white">{user.name}</p>
-              <p className="truncate text-[11px] text-blue-100">{user.role}</p>
+              <p className="truncate text-[11px] text-blue-300">{user.role}</p>
             </div>
           )}
           <div

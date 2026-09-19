@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { getFileUrl } from "@/api/directory";
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate, useSearchParams } from "@tanstack/react-router";
 import * as api from "@/api/directory";
 
@@ -213,11 +214,22 @@ export function VaultPage() {
     }
   };
 
-  // Handle context menu
+  // Handle context menu: open it just below the item's name, kept inside the screen
+  const MENU_WIDTH = 176;
+  const MENU_HEIGHT = 124;
   const handleContextMenu = (e: React.MouseEvent, itemId: string, itemType: "file" | "directory") => {
     e.preventDefault();
+    const target = e.currentTarget as HTMLElement;
+    const card = target.closest<HTMLElement>("[data-menu-item]");
+    const anchor = card?.querySelector<HTMLElement>("[data-menu-anchor]") ?? card ?? target;
+    const rect = anchor.getBoundingClientRect();
+
+    const fitsBelow = rect.bottom + 4 + MENU_HEIGHT <= window.innerHeight;
+    const top = fitsBelow ? rect.bottom + 4 : rect.top - 4 - MENU_HEIGHT;
+    const left = Math.min(rect.left, window.innerWidth - MENU_WIDTH - 8);
+
     setActiveMenu(itemId);
-    setMenuPos({ x: e.clientX, y: e.clientY });
+    setMenuPos({ x: Math.max(8, left), y: Math.max(8, top) });
   };
 
   const allItems = [...directories, ...files];
@@ -343,12 +355,13 @@ export function VaultPage() {
                 key={dir.id}
                 onClick={() => handleFolderClick(dir.id)}
                 onContextMenu={(e) => handleContextMenu(e, dir.id, "directory")}
+                data-menu-item
                 className="glass rounded-2xl p-4 hover-lift cursor-pointer group relative"
               >
                 <div className="size-10 rounded-xl bg-gradient-to-br from-indigo-400 to-purple-500 grid place-items-center text-white shadow-soft mb-3">
                   <Folder className="size-5" />
                 </div>
-                <p className="text-sm font-medium truncate">{dir.name}</p>
+                <p data-menu-anchor className="text-sm font-medium truncate">{dir.name}</p>
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
@@ -381,6 +394,7 @@ export function VaultPage() {
                       const url = getFileUrl(file.id);
                       window.open(url, "_blank", "noopener");
                     }}
+                    data-menu-item
                     className="glass rounded-2xl p-4 hover-lift group relative"
                   >
                     {progress > 0 && progress < 100 && (
@@ -394,7 +408,7 @@ export function VaultPage() {
                     <div className="aspect-video rounded-xl gradient-soft grid place-items-center mb-3 text-primary">
                       <Icon className="size-8" />
                     </div>
-                    <div className="flex items-start justify-between gap-2">
+                    <div data-menu-anchor className="flex items-start justify-between gap-2">
                       <p className="text-sm font-medium truncate flex-1">{file.name}</p>
                       <div
                         onClick={(e) => {
@@ -423,6 +437,7 @@ export function VaultPage() {
                       const url = getFileUrl(file.id);
                       window.open(url, "_blank", "noopener");
                     }}
+                    data-menu-item
                     className="flex items-center gap-3 p-3.5 hover:bg-accent/60 transition-colors relative"
                   >
                     {progress > 0 && progress < 100 && (
@@ -433,7 +448,7 @@ export function VaultPage() {
                     <div className="size-9 rounded-lg gradient-soft grid place-items-center text-primary">
                       <Icon className="size-4" />
                     </div>
-                    <p className="flex-1 text-sm font-medium truncate">{file.name}</p>
+                    <p data-menu-anchor className="flex-1 text-sm font-medium truncate">{file.name}</p>
                     <p className="text-xs text-muted-foreground w-20">{file.extension || "-"}</p>
                   </div>
                 );
@@ -444,17 +459,18 @@ export function VaultPage() {
       )}
 
       {/* Context Menu */}
-      {activeMenu && (
+      {activeMenu && createPortal(
         <div
-          className="fixed inset-0"
+          className="fixed inset-0 z-50"
           onClick={() => setActiveMenu(null)}
+          onWheel={() => setActiveMenu(null)}
           onContextMenu={(e) => {
             e.preventDefault();
             setActiveMenu(null);
           }}
         >
           <div
-            className="absolute bg-popover border border-border rounded-lg shadow-lg p-1 z-50 min-w-[160px]"
+            className="fixed bg-popover text-popover-foreground border border-border rounded-lg shadow-lg p-1 min-w-[160px]"
             style={{ top: `${menuPos.y}px`, left: `${menuPos.x}px` }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -500,7 +516,8 @@ export function VaultPage() {
               Delete
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* File preview opens in new tab; modal removed per UX preference */}

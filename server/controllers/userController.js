@@ -7,7 +7,8 @@ import { normalizeRole } from "../permission.js";
 import Stripe from "stripe";
 import { appConfig } from "../config/appConfig.js";
 
-const STRIPE_STORAGE_LIMIT_BYTES = 10485760;
+// Every successful Stripe payment adds this much storage
+const STORAGE_UPGRADE_BYTES = 5 * 1024 * 1024;
 
 const stripe = appConfig.stripeSecretKey
   ? new Stripe(appConfig.stripeSecretKey, { apiVersion: "2025-03-31.basil" })
@@ -175,6 +176,12 @@ export const getStorageInfo = async (req, res, next) => {
       storageLimit: user.storageLimit,
       storagePercent,
       subscriptionActive: user.subscriptionActive,
+      upgrade: {
+        available: Boolean(stripe),
+        bytes: STORAGE_UPGRADE_BYTES,
+        amount: appConfig.stripeStorageUpgradeAmount,
+        currency: appConfig.stripeCurrency,
+      },
     });
   } catch (err) {
     next(err);
@@ -190,10 +197,6 @@ export const createStorageCheckoutSession = async (req, res, next) => {
     }
 
     const user = await User.findById(req.user._id);
-
-    if (user.subscriptionActive && user.storageLimit >= STRIPE_STORAGE_LIMIT_BYTES) {
-      return res.status(200).json({ message: "Storage already upgraded" });
-    }
 
     if (!user.stripeCustomerId) {
       const customer = await stripe.customers.create({
@@ -220,13 +223,13 @@ export const createStorageCheckoutSession = async (req, res, next) => {
             unit_amount: appConfig.stripeStorageUpgradeAmount,
             product_data: {
               name: "VFS Storage Upgrade",
-              description: "Increase storage from 5 MB to 10 MB",
+              description: `Add ${STORAGE_UPGRADE_BYTES / 1048576} MB to your storage`,
             },
           },
         },
       ],
-      success_url: `${appConfig.clientOrigin}/?stripe_checkout=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appConfig.clientOrigin}/?stripe_checkout=cancelled`,
+      success_url: `${appConfig.clientOrigin}/dashboard?stripe_checkout=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${appConfig.clientOrigin}/dashboard?stripe_checkout=cancelled`,
       metadata: {
         userId: user._id.toString(),
       },
@@ -255,36 +258,50 @@ export const confirmStorageCheckout = async (req, res, next) => {
       });
     }
 
-    const user = await User.findById(req.user._id);
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     if (!session || session.payment_status !== "paid") {
       return res.status(400).json({ error: "Payment is not completed" });
     }
 
-    if (user.stripeCustomerId && session.customer !== user.stripeCustomerId) {
+    const user = await User.findById(req.user._id);
+    const customerMatches = !user.stripeCustomerId || session.customer === user.stripeCustomerId;
+
+    if (session.metadata?.userId !== user._id.toString() || !customerMatches) {
       return res.status(403).json({ error: "Checkout session does not belong to this user" });
     }
 
+    const setFields = { subscriptionActive: true };
     if (!user.stripeCustomerId && typeof session.customer === "string") {
-      user.stripeCustomerId = session.customer;
+      setFields.stripeCustomerId = session.customer;
     }
 
-    user.storageLimit = Math.max(user.storageLimit, STRIPE_STORAGE_LIMIT_BYTES);
-    user.subscriptionActive = true;
-    await user.save();
+    // Add storage only if this checkout session was never used before.
+    // One atomic update, so a page refresh or a double request cannot add storage twice.
+    const upgradedUser = await User.findOneAndUpdate(
+      { _id: user._id, stripeCheckoutSessionIds: { $ne: sessionId } },
+      {
+        $inc: { storageLimit: STORAGE_UPGRADE_BYTES },
+        $push: { stripeCheckoutSessionIds: sessionId },
+        $set: setFields,
+      },
+      { new: true }
+    );
 
+    const currentUser = upgradedUser || user;
     const storagePercent =
-      user.storageLimit > 0
-        ? Math.round((user.storageUsed / user.storageLimit) * 100)
+      currentUser.storageLimit > 0
+        ? Math.round((currentUser.storageUsed / currentUser.storageLimit) * 100)
         : 0;
 
-    return res.status(200).json({ 
-      message: "Storage upgraded successfully",
-      storageUsed: user.storageUsed,
-      storageLimit: user.storageLimit,
+    return res.status(200).json({
+      message: upgradedUser
+        ? `Storage increased by ${STORAGE_UPGRADE_BYTES / 1048576} MB`
+        : "This payment was already applied",
+      storageUsed: currentUser.storageUsed,
+      storageLimit: currentUser.storageLimit,
       storagePercent,
-      subscriptionActive: user.subscriptionActive,
+      subscriptionActive: currentUser.subscriptionActive,
     });
   } catch (err) {
     next(err);
