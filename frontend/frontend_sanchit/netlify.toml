@@ -1,0 +1,7 @@
+# Netlify reads this file when the site's Base directory is frontend/frontend_sanchit.
+[build]
+  command = "npm run build"
+  publish = "dist/client"
+
+[build.environment]
+  NODE_VERSION = "22"
