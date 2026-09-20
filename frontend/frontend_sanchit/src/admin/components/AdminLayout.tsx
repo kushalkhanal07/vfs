@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { appRoutes } from "@/shared/routes";
 import { getCurrentUser, logoutUser, type CurrentUser } from "@/api/user";
+import { BrandLogoTile } from "@/components/brand-logo";
 
 const adminNav = [
   { title: "Dashboard", url: appRoutes.admin, icon: LayoutDashboard },
@@ -133,9 +134,7 @@ export function AdminLayout() {
       <div className="grid min-h-screen lg:grid-cols-[280px_minmax(0,1fr)]">
         <aside className="hidden border-r border-blue-100 bg-white/80 backdrop-blur-xl lg:flex lg:flex-col dark:border-white/10 dark:bg-slate-950/70">
           <div className="flex items-center gap-3 border-b border-blue-100 px-6 py-5 dark:border-white/10">
-            <div className="grid size-11 place-items-center rounded-2xl bg-blue-500/15 text-blue-700 ring-1 ring-blue-400/30 dark:text-blue-300">
-              <ShieldCheck className="size-5" />
-            </div>
+            <BrandLogoTile className="size-11 rounded-2xl ring-1 ring-blue-400/30" />
             <div>
               <p className="text-xs uppercase tracking-[0.3em] text-blue-700/70 dark:text-blue-200/70">Admin Panel</p>
               <h1 className="font-display text-lg font-semibold">StudyVault Control</h1>

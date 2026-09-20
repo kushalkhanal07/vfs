@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X, Moon, Sun, Sparkles, Github, Twitter, Linkedin } from "lucide-react";
+import { Menu, X, Moon, Sun, Github, Twitter, Linkedin } from "lucide-react";
+import { BrandLogoTile } from "@/components/brand-logo";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -43,9 +44,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 bg-blue-800 text-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-2 group">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/10 text-white transition-transform group-hover:scale-105">
-            <Sparkles className="h-5 w-5" />
-          </span>
+          <BrandLogoTile className="h-10 w-10 rounded-xl transition-transform group-hover:scale-105" />
           <span className="text-lg font-semibold tracking-tight text-white">StudyVault</span>
         </Link>
 
@@ -133,9 +132,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-7xl grid-cols-2 gap-10 px-4 py-14 sm:px-6 md:grid-cols-5 lg:px-8">
         <div className="col-span-2">
           <Link to="/" className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-black text-white">
-              <Sparkles className="h-5 w-5" />
-            </span>
+            <BrandLogoTile className="h-10 w-10 rounded-xl ring-1 ring-gray-200" />
             <span className="text-lg font-semibold text-black">StudyVault</span>
           </Link>
           <p className="mt-3 max-w-xs text-sm text-gray-600">

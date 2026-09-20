@@ -3,8 +3,6 @@ import {
   LayoutDashboard,
   Users,
   Settings,
-  Sparkles,
-  GraduationCap,
   Moon,
   Sun,
   Folder,
@@ -17,6 +15,7 @@ import {
 import { useEffect, useState } from "react";
 import { appRoutes } from "@/shared/routes";
 import { getCurrentUser, type CurrentUser } from "@/api/user";
+import { BrandLogoTile } from "@/components/brand-logo";
 import axios from "axios";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:4000";
@@ -109,9 +108,7 @@ export function DashboardSidebar() {
   return (
     <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-blue-800 bg-blue-950 text-white md:sticky md:top-0 md:flex">
       <div className="flex items-center gap-3 px-5 py-6">
-        <div className="flex size-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-glow">
-          <GraduationCap className="size-5" />
-        </div>
+        <BrandLogoTile className="size-11 rounded-xl shadow-glow" />
         <div>
           <h1 className="text-base font-semibold leading-none tracking-tight text-white">StudyVault</h1>
           <p className="mt-1 text-[11px] text-blue-200">Unified Workspace</p>

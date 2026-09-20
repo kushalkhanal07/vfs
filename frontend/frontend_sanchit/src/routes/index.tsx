@@ -144,15 +144,11 @@ function HomePage() {
         <div aria-hidden className="grid-bg absolute inset-0 -z-10 opacity-40" />
         <div className="mx-auto max-w-7xl px-4 pt-16 pb-12 sm:px-6 sm:pt-24 lg:px-8 lg:pt-28">
           <div className="mx-auto max-w-3xl text-center">
-            <span className="animate-fade-in-up inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              Now in early access · Built for ambitious students
-            </span>
             <h1 className="animate-fade-in-up delay-100 mt-6 font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
               Your second brain for <span className="text-gradient">academic mastery</span>
             </h1>
             <p className="animate-fade-in-up delay-200 mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
-              StudyVault is a vault for learning — smart storage, AI-grade search, and spaced
+              StudyVault is a vault for learning smart storage, Smart search, and spaced
               repetition that turns scattered notes into long-term knowledge.
             </p>
             <div className="animate-fade-in-up delay-300 mt-8 flex flex-wrap items-center justify-center gap-3">

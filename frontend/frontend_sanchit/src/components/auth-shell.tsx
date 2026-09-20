@@ -9,7 +9,6 @@ import {
   Mail,
   Moon,
   ShieldCheck,
-  Sparkles,
   Sun,
 } from "lucide-react";
 import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
@@ -19,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { loginWithEmail, loginWithGoogle, registerWithEmail, sendOtp, verifyOtp } from "@/api/auth";
 import { getCurrentUser } from "@/api/user";
 import { appRoutes } from "@/shared/routes";
+import { BrandLogoTile } from "@/components/brand-logo";
 
 export type AuthMode = "login" | "signup";
 
@@ -232,9 +232,7 @@ export function AuthShell({ mode }: { mode: AuthMode }) {
 
         <div className="relative">
           <Link to="/" className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/15 backdrop-blur">
-              <Sparkles className="h-5 w-5" />
-            </span>
+            <BrandLogoTile className="h-10 w-10 rounded-xl" />
             <span className="font-display text-lg font-bold">StudyVault</span>
           </Link>
         </div>
@@ -292,9 +290,7 @@ export function AuthShell({ mode }: { mode: AuthMode }) {
         <div className="flex flex-1 items-center justify-center px-6 pb-10">
           <div className="w-full max-w-md animate-fade-in-up">
             <div className="mb-8 flex items-center gap-2 lg:hidden">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shadow-glow">
-                <Sparkles className="h-5 w-5" />
-              </span>
+              <BrandLogoTile className="h-11 w-11 rounded-xl shadow-glow" />
               <span className="font-display text-lg font-bold">StudyVault</span>
             </div>
 

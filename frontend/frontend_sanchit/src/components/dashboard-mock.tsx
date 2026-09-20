@@ -1,12 +1,12 @@
 import {
   FileText,
   FolderTree,
-  Sparkles,
   Brain,
   Clock,
   TrendingUp,
   CheckCircle2,
 } from "lucide-react";
+import { BrandLogoTile } from "@/components/brand-logo";
 
 export function DashboardMock() {
   return (
@@ -32,9 +32,7 @@ export function DashboardMock() {
           {/* sidebar */}
           <aside className="col-span-3 hidden border-r border-gray-200 bg-gray-50 p-4 sm:block">
             <div className="mb-4 flex items-center gap-2">
-              <span className="grid h-7 w-7 place-items-center rounded-md bg-black text-white">
-                <Sparkles className="h-3.5 w-3.5" />
-              </span>
+              <BrandLogoTile className="h-7 w-7 rounded-md ring-1 ring-gray-200" />
               <span className="font-semibold">StudyVault</span>
             </div>
             <div className="space-y-1">
