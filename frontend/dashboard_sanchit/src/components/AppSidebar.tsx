@@ -8,11 +8,11 @@ import {
   Bell,
   Settings,
   Sparkles,
-  GraduationCap,
   Moon,
   Sun,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { BrandLogoTile } from "@/components/brand-logo";
 
 const items = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -47,9 +47,7 @@ export function AppSidebar() {
   return (
     <aside className="hidden md:flex w-64 shrink-0 flex-col glass-strong border-r border-sidebar-border h-screen sticky top-0">
       <div className="px-5 py-6 flex items-center gap-3">
-        <div className="size-10 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
-          <GraduationCap className="size-5 text-primary-foreground" />
-        </div>
+        <BrandLogoTile className="size-10 rounded-xl shadow-glow" />
         <div>
           <h1 className="font-semibold tracking-tight text-base leading-none">StudyVault</h1>
           <p className="text-[11px] text-muted-foreground mt-1">Vault for Learning</p>
